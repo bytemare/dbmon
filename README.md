@@ -90,3 +90,22 @@ step-by-step explanation.
 - authentication collector <-> cluster (no idea, yet)
 - authentication server <-> collector (set up instance pki ?)
 - authentication client <-> server (webauthn + macaroons ?)
+
+## Ideas
+
+v0 :
+- [ ] Agents are individual go routines that use a connector to communicate with a cluster ( agent 1:1 cluster )
+- [ ] A connector defines the requests to be send to a type of cluster, and implements the a client connection to it
+- [ ] When an agent gets a response, it hands it to the collector
+- [ ] The collector sends every result to the server as a report : A report is the response for a call to the cluster
+- [ ] Server holds a cache : a key:value map, that associates an identified cluster to a list of reports.
+- [ ] Client operates unary RPC from to server and gets all the reports in a single response
+- [ ] Server/Collector are bundled and Dockerised
+
+v1 :
+- [ ] Pub/Sub pattern in gRPC between client and server : the server streams continuously reports to the client
+- [ ] Separate server and collector, and implement a gRPC interface between them
+- [ ] Continuously stream reports from the collector to the server 
+
+v2 :
+- [ ] Operate a better cache system, maybe using a database
