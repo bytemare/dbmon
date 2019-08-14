@@ -2,7 +2,7 @@ package main
 
 import (
 	"../dbmon"
-	"github.com/bytemare/dbmon/Tests/CockroachDB"
+	"github.com/bytemare/dbmon/dbmon/connectors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -11,7 +11,7 @@ import (
 // An example program using the collector
 func main() {
 
-	roachCon := CockroachDB.NewConnector("http://localhost", "8080")
+	roachCon := connectors.NewConnector("http://localhost", "8080")
 
 	cluster := dbmon.NewCluster("roachy", *roachCon)
 

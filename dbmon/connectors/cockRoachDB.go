@@ -1,6 +1,6 @@
 // cockroachConnector implements the Connector interface
 // It hols everything needed to connect to a CockroachDB cluster and retrieve data
-package CockroachDB
+package connectors
 
 import (
 	"bufio"
