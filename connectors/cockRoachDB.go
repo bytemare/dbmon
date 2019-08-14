@@ -3,7 +3,7 @@
 package connectors
 
 import (
-	"bufio"
+	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
@@ -22,8 +22,9 @@ type RoachConnector struct {
 	period    	time.Duration // Period to repetitively interrogate the cluster
 }
 
-// New return
+// New returns a new initialised connector for a CockRoachDB endpoint
 func NewConnector(ip string, port string) *RoachConnector {
+	log.Warn("Warning : DEMO ! CockroachDB should not use vanilla http.Client for production use.")
 	return &RoachConnector{
 		ip:ip,
 		port:port,
@@ -37,11 +38,21 @@ func NewConnector(ip string, port string) *RoachConnector {
 **
  */
 
+type response struct {
+	body	string
+}
+
+func decode(resp *http.Response, result interface{}) error{
+	return json.NewDecoder(resp.Body).Decode(result)
+}
+
+
 // Request operates a request
-func (rc RoachConnector) Request() (response string, err error) {
+func (rc RoachConnector) Request() (result string, err error) {
 
 	log.Info("Sending request...")
 
+	// TODO : do not use this in production, DEMO ONLY
 	resp, err := http.Get(rc.ip + ":" + rc.port + roachUriHealth )
 	if err != nil {
 		log.Error(err)
@@ -51,17 +62,16 @@ func (rc RoachConnector) Request() (response string, err error) {
 
 	log.Info("Response status: ", resp.Status)
 
-	scanner := bufio.NewScanner(resp.Body)
-	for i := 0; scanner.Scan() && i < 5; i++ {
-		response += scanner.Text()
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Error("Scanner err: ", err)
+	decoded := new(response)
+	err = decode(resp, decoded)
+	if err != nil {
+		log.Error("Error in decoding json response : ", err)
 		return "", err
 	}
 
-	return response,nil
+	log.Info("Decoded result : ", decoded.body)
+
+	return decoded.body,nil
 }
 
 // Generic Information about the cluster
