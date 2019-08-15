@@ -5,8 +5,8 @@ import "time"
 
 // Cluster holds identity information about a registered Cluster
 type Cluster struct {
-	id        string        // Identification/Name for the target cluster
-	connector Connector    // Connector enabling communicating with the cluster
+	id        string    // Identification/Name for the target cluster
+	connector Connector // Connector enabling communicating with the cluster
 }
 
 // request defines a possible request for a cluster's API
