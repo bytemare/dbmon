@@ -10,7 +10,7 @@ type Connector interface {
 	//SetRequest(req string) (err error)
 
 	// Generic Information about the cluster
-	GetIP()	(ip string)
+	GetIP() (ip string)
 	// Return the period for requests
 	Period() (period time.Duration)
 	// Returns a generic status about the cluster (OK, Not available, slow)
