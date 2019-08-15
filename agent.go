@@ -33,6 +33,8 @@ func (a *agent) run() {
 
 	ticker := time.NewTicker(a.cluster.connector.Period())
 
+	log.Info("Agent starting for cluster ", a.cluster.id)
+
 agent:
 	for {
 		select {
@@ -42,7 +44,8 @@ agent:
 				"cluster":   a.cluster.id,
 				"timestamp": time.Now().Format(timeLayout),
 			}).Info("Agent for cluster is now stopping.")
-			// todo : verify if there aren't any pending connections
+			// todo : verify if there aren't any pending connections or things to free
+			close(a.sync)
 			break agent
 
 		case t := <-ticker.C:
@@ -74,6 +77,8 @@ func (a *agent) collect() error {
 
 	// Send data
 	a.sink <- probe
+
+	log.Info("Agent sent probe to collector.")
 
 	return nil
 }
