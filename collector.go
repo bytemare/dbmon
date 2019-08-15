@@ -3,6 +3,7 @@ package dbmon
 
 import (
 	"errors"
+	"github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -12,15 +13,15 @@ const timeLayout = "2006-01-02 15:04:05:1234"
 
 // Collector struct holds a list of agents to registered clusters
 type Collector struct {
-	clusters   map[string]*Cluster // List of currently registered clusters
-	agents     map[*Cluster]*agent // List of running agents
-	sink       chan [2]string      // Channel agents send their data to
-	serverChan chan<- [2]string    // Channel to send data to
-	newCluster chan Cluster      // Channel to receive new requests for cluster registration
+	clusters   map[string]*Cluster  // List of currently registered clusters
+	agents     map[*Cluster]*agent  // List of running agents
+	sink       chan [2]string       // Channel agents send their data to
+	serverChan chan<- *dbmon.Report // Channel to send data to
+	newCluster chan Cluster         // Channel to receive new requests for cluster registration
 
 	// Synchronisation for closing
-	sync		chan struct{}     // Channel used to instruct Collector to stop
-	wait		sync.WaitGroup
+	sync chan struct{} // Channel used to instruct Collector to stop
+	wait sync.WaitGroup
 }
 
 // agent is dedicated routine to handle connections to a cluster
@@ -140,13 +141,13 @@ func (c *Collector) stopAll() {
 }
 
 // NewCollector initialises and returns a new Collector struct
-func NewCollector(serverChan chan<- [2]string) *Collector {
+func NewCollector(serverChan chan<- *dbmon.Report) *Collector {
 	return &Collector{
 		clusters:   make(map[string]*Cluster),
 		agents:     make(map[*Cluster]*agent),
 		sink:       make(chan [2]string),
 		serverChan: serverChan,
-		newCluster: make(chan Cluster),
+		newCluster: make(chan Cluster, 1000),
 		sync:       make(chan struct{}),
 		wait:       sync.WaitGroup{},
 	}
@@ -154,7 +155,7 @@ func NewCollector(serverChan chan<- [2]string) *Collector {
 
 // RegisterNewCluster registers a new cluster to the collector, spawning a new agent for it
 func (c *Collector) RegisterNewCluster(cluster *Cluster) {
-		c.newCluster <- *cluster
+	c.newCluster <- *cluster
 }
 
 // UnregisterCluster stops the corresponding agent to the cluster and deletes its entry in the register
@@ -162,6 +163,20 @@ func (c *Collector) UnregisterCluster(cluster *Cluster) {
 	//todo
 	log.Panic("OMG: UnregisterCluster IS NOT IMPLEMENTED !!!")
 }
+
+//
+func dataToReport(data [2]string) *dbmon.Report {
+	return &dbmon.Report{
+		ClusterID:            data[0],
+		Status:               0,
+		Data:                 data[1],
+		Timestamp:            time.Now().String(),
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	}
+}
+
 
 // Start starts the Collector
 func (c *Collector) Start() {
@@ -176,7 +191,8 @@ collector:
 
 		case data := <-c.sink:
 			// Send to server
-			c.serverChan <- data
+			report := dataToReport(data)
+			c.serverChan <- report
 
 		case cluster := <-c.newCluster:
 			if err := c.newAgent(&cluster, &c.wait); err != nil {
@@ -186,7 +202,7 @@ collector:
 					"raw data":  cluster,
 				}).Error(err)
 
-		// Todo : use a message type method, by using a single channel to control collector : add cluster, remove cluster, etc.
+				// Todo : use a message type method, by using a single channel to control collector : add cluster, remove cluster, etc.
 			}
 		}
 	}
