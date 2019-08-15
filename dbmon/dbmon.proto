@@ -2,18 +2,36 @@ syntax = "proto3";
 
 package dbmon;
 
-// The greeter service definition.
+// A HealthCheck gRPC service
 service HealCheck {
-    // Sends a greeting
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    // Ask for all available reports
+    rpc Pull(PullRequest) returns (PullReply) {}
 }
 
-// The request message containing the user's name.
-message HelloRequest {
-    string name = 1;
+
+message Error {
+    uint32 code = 1;
+    string message = 2;
+    //Code message = 2;
 }
 
-// The response message containing the greetings
-message HelloReply {
-    string message = 1;
+
+// Request message to pull data from server
+message PullRequest {
+    string clusterId = 1;
+}
+
+// A report holds a cluster's information for a single request to the cluster
+message Report {
+    string clusterID = 1;
+    int32 status = 2;
+    string data = 3;
+    string timestamp = 4;
+}
+
+// The response message containing all accumulated reports
+message PullReply {
+    string clusterId = 1;
+    repeated Report reports = 3;
+    Error error = 4;
 }

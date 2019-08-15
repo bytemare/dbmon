@@ -24,104 +24,241 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// The request message containing the user's name.
-type HelloRequest struct {
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+type Error struct {
+	Code                 uint32   `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
+	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *HelloRequest) Reset()         { *m = HelloRequest{} }
-func (m *HelloRequest) String() string { return proto.CompactTextString(m) }
-func (*HelloRequest) ProtoMessage()    {}
-func (*HelloRequest) Descriptor() ([]byte, []int) {
+func (m *Error) Reset()         { *m = Error{} }
+func (m *Error) String() string { return proto.CompactTextString(m) }
+func (*Error) ProtoMessage()    {}
+func (*Error) Descriptor() ([]byte, []int) {
 	return fileDescriptor_fd65e11b6a41de0a, []int{0}
 }
 
-func (m *HelloRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_HelloRequest.Unmarshal(m, b)
+func (m *Error) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Error.Unmarshal(m, b)
 }
-func (m *HelloRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_HelloRequest.Marshal(b, m, deterministic)
+func (m *Error) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Error.Marshal(b, m, deterministic)
 }
-func (m *HelloRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HelloRequest.Merge(m, src)
+func (m *Error) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Error.Merge(m, src)
 }
-func (m *HelloRequest) XXX_Size() int {
-	return xxx_messageInfo_HelloRequest.Size(m)
+func (m *Error) XXX_Size() int {
+	return xxx_messageInfo_Error.Size(m)
 }
-func (m *HelloRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_HelloRequest.DiscardUnknown(m)
+func (m *Error) XXX_DiscardUnknown() {
+	xxx_messageInfo_Error.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_HelloRequest proto.InternalMessageInfo
+var xxx_messageInfo_Error proto.InternalMessageInfo
 
-func (m *HelloRequest) GetName() string {
+func (m *Error) GetCode() uint32 {
 	if m != nil {
-		return m.Name
+		return m.Code
 	}
-	return ""
+	return 0
 }
 
-// The response message containing the greetings
-type HelloReply struct {
-	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *HelloReply) Reset()         { *m = HelloReply{} }
-func (m *HelloReply) String() string { return proto.CompactTextString(m) }
-func (*HelloReply) ProtoMessage()    {}
-func (*HelloReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fd65e11b6a41de0a, []int{1}
-}
-
-func (m *HelloReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_HelloReply.Unmarshal(m, b)
-}
-func (m *HelloReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_HelloReply.Marshal(b, m, deterministic)
-}
-func (m *HelloReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HelloReply.Merge(m, src)
-}
-func (m *HelloReply) XXX_Size() int {
-	return xxx_messageInfo_HelloReply.Size(m)
-}
-func (m *HelloReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_HelloReply.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_HelloReply proto.InternalMessageInfo
-
-func (m *HelloReply) GetMessage() string {
+func (m *Error) GetMessage() string {
 	if m != nil {
 		return m.Message
 	}
 	return ""
 }
 
+// Request message to pull data from server
+type PullRequest struct {
+	ClusterId            string   `protobuf:"bytes,1,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PullRequest) Reset()         { *m = PullRequest{} }
+func (m *PullRequest) String() string { return proto.CompactTextString(m) }
+func (*PullRequest) ProtoMessage()    {}
+func (*PullRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fd65e11b6a41de0a, []int{1}
+}
+
+func (m *PullRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PullRequest.Unmarshal(m, b)
+}
+func (m *PullRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PullRequest.Marshal(b, m, deterministic)
+}
+func (m *PullRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PullRequest.Merge(m, src)
+}
+func (m *PullRequest) XXX_Size() int {
+	return xxx_messageInfo_PullRequest.Size(m)
+}
+func (m *PullRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PullRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PullRequest proto.InternalMessageInfo
+
+func (m *PullRequest) GetClusterId() string {
+	if m != nil {
+		return m.ClusterId
+	}
+	return ""
+}
+
+// A report holds a cluster's information for a single request to the cluster
+type Report struct {
+	ClusterID            string   `protobuf:"bytes,1,opt,name=clusterID,proto3" json:"clusterID,omitempty"`
+	Status               int32    `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
+	Data                 string   `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Timestamp            string   `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Report) Reset()         { *m = Report{} }
+func (m *Report) String() string { return proto.CompactTextString(m) }
+func (*Report) ProtoMessage()    {}
+func (*Report) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fd65e11b6a41de0a, []int{2}
+}
+
+func (m *Report) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Report.Unmarshal(m, b)
+}
+func (m *Report) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Report.Marshal(b, m, deterministic)
+}
+func (m *Report) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Report.Merge(m, src)
+}
+func (m *Report) XXX_Size() int {
+	return xxx_messageInfo_Report.Size(m)
+}
+func (m *Report) XXX_DiscardUnknown() {
+	xxx_messageInfo_Report.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Report proto.InternalMessageInfo
+
+func (m *Report) GetClusterID() string {
+	if m != nil {
+		return m.ClusterID
+	}
+	return ""
+}
+
+func (m *Report) GetStatus() int32 {
+	if m != nil {
+		return m.Status
+	}
+	return 0
+}
+
+func (m *Report) GetData() string {
+	if m != nil {
+		return m.Data
+	}
+	return ""
+}
+
+func (m *Report) GetTimestamp() string {
+	if m != nil {
+		return m.Timestamp
+	}
+	return ""
+}
+
+// The response message containing all accumulated reports
+type PullReply struct {
+	ClusterId            string    `protobuf:"bytes,1,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
+	Reports              []*Report `protobuf:"bytes,3,rep,name=reports,proto3" json:"reports,omitempty"`
+	Error                *Error    `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
+}
+
+func (m *PullReply) Reset()         { *m = PullReply{} }
+func (m *PullReply) String() string { return proto.CompactTextString(m) }
+func (*PullReply) ProtoMessage()    {}
+func (*PullReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fd65e11b6a41de0a, []int{3}
+}
+
+func (m *PullReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PullReply.Unmarshal(m, b)
+}
+func (m *PullReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PullReply.Marshal(b, m, deterministic)
+}
+func (m *PullReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PullReply.Merge(m, src)
+}
+func (m *PullReply) XXX_Size() int {
+	return xxx_messageInfo_PullReply.Size(m)
+}
+func (m *PullReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_PullReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PullReply proto.InternalMessageInfo
+
+func (m *PullReply) GetClusterId() string {
+	if m != nil {
+		return m.ClusterId
+	}
+	return ""
+}
+
+func (m *PullReply) GetReports() []*Report {
+	if m != nil {
+		return m.Reports
+	}
+	return nil
+}
+
+func (m *PullReply) GetError() *Error {
+	if m != nil {
+		return m.Error
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*HelloRequest)(nil), "dbmon.HelloRequest")
-	proto.RegisterType((*HelloReply)(nil), "dbmon.HelloReply")
+	proto.RegisterType((*Error)(nil), "dbmon.Error")
+	proto.RegisterType((*PullRequest)(nil), "dbmon.PullRequest")
+	proto.RegisterType((*Report)(nil), "dbmon.Report")
+	proto.RegisterType((*PullReply)(nil), "dbmon.PullReply")
 }
 
 func init() { proto.RegisterFile("dbmon.proto", fileDescriptor_fd65e11b6a41de0a) }
 
 var fileDescriptor_fd65e11b6a41de0a = []byte{
-	// 140 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4e, 0x49, 0xca, 0xcd,
-	0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x73, 0x94, 0x94, 0xb8, 0x78, 0x3c,
-	0x52, 0x73, 0x72, 0xf2, 0x83, 0x52, 0x0b, 0x4b, 0x53, 0x8b, 0x4b, 0x84, 0x84, 0xb8, 0x58, 0xf2,
-	0x12, 0x73, 0x53, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x83, 0xc0, 0x6c, 0x25, 0x35, 0x2e, 0x2e,
-	0xa8, 0x9a, 0x82, 0x9c, 0x4a, 0x21, 0x09, 0x2e, 0xf6, 0xdc, 0xd4, 0xe2, 0xe2, 0xc4, 0x74, 0x98,
-	0x22, 0x18, 0xd7, 0xc8, 0x91, 0x8b, 0xd3, 0x23, 0x35, 0x31, 0xc7, 0x39, 0x23, 0x35, 0x39, 0x5b,
-	0xc8, 0x84, 0x8b, 0x23, 0x38, 0xb1, 0x12, 0xac, 0x4f, 0x48, 0x58, 0x0f, 0x62, 0x33, 0xb2, 0x4d,
-	0x52, 0x82, 0xa8, 0x82, 0x05, 0x39, 0x95, 0x4a, 0x0c, 0x49, 0x6c, 0x60, 0xc7, 0x19, 0x03, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0x99, 0xe7, 0x11, 0x75, 0xab, 0x00, 0x00, 0x00,
+	// 263 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0x4f, 0x4b, 0xc4, 0x30,
+	0x10, 0xc5, 0xad, 0xfd, 0xb3, 0x74, 0xea, 0x82, 0xcc, 0x41, 0x82, 0x78, 0x28, 0xb9, 0x58, 0x10,
+	0x7a, 0xa8, 0x78, 0xf2, 0xe8, 0x0a, 0x7a, 0x93, 0x7c, 0x83, 0x6c, 0x3b, 0xa8, 0x98, 0x9a, 0x98,
+	0xa4, 0xc2, 0x7e, 0x7b, 0x69, 0xd2, 0x55, 0xd7, 0x83, 0xb7, 0xf9, 0xf3, 0xf2, 0xe6, 0xc7, 0x0b,
+	0x54, 0xc3, 0x76, 0xd4, 0xef, 0xad, 0xb1, 0xda, 0x6b, 0xcc, 0x43, 0xc3, 0x6f, 0x20, 0xbf, 0xb7,
+	0x56, 0x5b, 0x44, 0xc8, 0x7a, 0x3d, 0x10, 0x4b, 0xea, 0xa4, 0x59, 0x8b, 0x50, 0x23, 0x83, 0xd5,
+	0x48, 0xce, 0xc9, 0x67, 0x62, 0xc7, 0x75, 0xd2, 0x94, 0x62, 0xdf, 0xf2, 0x2b, 0xa8, 0x9e, 0x26,
+	0xa5, 0x04, 0x7d, 0x4c, 0xe4, 0x3c, 0x5e, 0x40, 0xd9, 0xab, 0xc9, 0x79, 0xb2, 0x8f, 0x43, 0x70,
+	0x28, 0xc5, 0xcf, 0x80, 0x1b, 0x28, 0x04, 0x19, 0x6d, 0x0f, 0x74, 0x9b, 0xbf, 0xba, 0x0d, 0x9e,
+	0x41, 0xe1, 0xbc, 0xf4, 0x93, 0x0b, 0xd7, 0x72, 0xb1, 0x74, 0x33, 0xda, 0x20, 0xbd, 0x64, 0x69,
+	0x78, 0x10, 0xea, 0xd9, 0xc9, 0xbf, 0x8e, 0xe4, 0xbc, 0x1c, 0x0d, 0xcb, 0xa2, 0xd3, 0xf7, 0x80,
+	0x7f, 0x42, 0x19, 0xf1, 0x8c, 0xda, 0xfd, 0x0f, 0x87, 0x97, 0xb0, 0xb2, 0x01, 0xce, 0xb1, 0xb4,
+	0x4e, 0x9b, 0xaa, 0x5b, 0xb7, 0x31, 0xa6, 0x88, 0x2c, 0xf6, 0x5b, 0xe4, 0x90, 0xd3, 0x9c, 0x54,
+	0xb8, 0x56, 0x75, 0x27, 0x8b, 0x2c, 0xa4, 0x27, 0xe2, 0xaa, 0xbb, 0x85, 0xf2, 0x81, 0xa4, 0xba,
+	0x7b, 0xa1, 0xfe, 0x0d, 0x5b, 0xc8, 0x66, 0x08, 0xc4, 0x45, 0xf9, 0x2b, 0xb0, 0xf3, 0xd3, 0x83,
+	0x99, 0x51, 0x3b, 0x7e, 0xb4, 0x2d, 0xc2, 0xc7, 0x5c, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff, 0x01,
+	0xa9, 0x53, 0x6d, 0xa7, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -136,8 +273,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type HealCheckClient interface {
-	// Sends a greeting
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// Ask for all available reports
+	Pull(ctx context.Context, in *PullRequest, opts ...grpc.CallOption) (*PullReply, error)
 }
 
 type healCheckClient struct {
@@ -148,9 +285,9 @@ func NewHealCheckClient(cc *grpc.ClientConn) HealCheckClient {
 	return &healCheckClient{cc}
 }
 
-func (c *healCheckClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/dbmon.HealCheck/SayHello", in, out, opts...)
+func (c *healCheckClient) Pull(ctx context.Context, in *PullRequest, opts ...grpc.CallOption) (*PullReply, error) {
+	out := new(PullReply)
+	err := c.cc.Invoke(ctx, "/dbmon.HealCheck/Pull", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -159,36 +296,36 @@ func (c *healCheckClient) SayHello(ctx context.Context, in *HelloRequest, opts .
 
 // HealCheckServer is the server API for HealCheck service.
 type HealCheckServer interface {
-	// Sends a greeting
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	// Ask for all available reports
+	Pull(context.Context, *PullRequest) (*PullReply, error)
 }
 
 // UnimplementedHealCheckServer can be embedded to have forward compatible implementations.
 type UnimplementedHealCheckServer struct {
 }
 
-func (*UnimplementedHealCheckServer) SayHello(ctx context.Context, req *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (*UnimplementedHealCheckServer) Pull(ctx context.Context, req *PullRequest) (*PullReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Pull not implemented")
 }
 
 func RegisterHealCheckServer(s *grpc.Server, srv HealCheckServer) {
 	s.RegisterService(&_HealCheck_serviceDesc, srv)
 }
 
-func _HealCheck_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _HealCheck_Pull_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PullRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HealCheckServer).SayHello(ctx, in)
+		return srv.(HealCheckServer).Pull(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dbmon.HealCheck/SayHello",
+		FullMethod: "/dbmon.HealCheck/Pull",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealCheckServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(HealCheckServer).Pull(ctx, req.(*PullRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,8 +335,8 @@ var _HealCheck_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*HealCheckServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _HealCheck_SayHello_Handler,
+			MethodName: "Pull",
+			Handler:    _HealCheck_Pull_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
