@@ -1,12 +1,10 @@
 package main
 
 import (
-	"../dbmon"
-	"github.com/bytemare/dbmon/dbmon/connectors"
+	"github.com/bytemare/dbmon"
+	"github.com/bytemare/dbmon/connectors"
 	log "github.com/sirupsen/logrus"
 )
-
-
 
 // An example program using the collector
 func main() {
@@ -23,7 +21,7 @@ func main() {
 
 	collector.RegisterNewCluster(cluster)
 
-	for i := 0 ; i < 5 ; i++  {
+	for i := 0; i < 5; i++ {
 		log.Info("Received from collector ", <-serverChan)
 	}
 
