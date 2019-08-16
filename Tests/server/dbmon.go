@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/bytemare/dbmon"
-	"github.com/bytemare/dbmon/connectors"
-	dbmon2 "github.com/bytemare/dbmon/dbmon"
+	"github.com/bytemare/dbmon/connectors/CockroachDB"
+	pb "github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
@@ -12,31 +12,27 @@ import (
 
 const addr = "http://localhost"
 const serverPort = ":4000"
-const clusterPort  = "8080"
-const cludterId = "roachy"
+const clusterPort = "8080"
+const clusterId = "roachy"
 
 func main() {
 
-	source := make(chan *dbmon2.Report)
+	source := make(chan *pb.Probe)
 
-	// Set up server
+	// Set up components
 	mon := dbmon.NewDBMon(serverPort, source)
-	go mon.Start()
-	log.Info("Server started.")
-
-	// Set up collector
-	roachCon := connectors.NewConnector(addr, clusterPort)
-	cluster := dbmon.NewCluster(cludterId, roachCon)
 	collector := dbmon.NewCollector(source)
+	roachCon := cockroachdb.NewConnector(clusterId, addr, clusterPort)
+	cluster := dbmon.NewCluster(clusterId, roachCon)
 
-
-	log.Info("Collection set.")
-
-	// It is important to first add a cluster in the server
+	// Register Cluster to server
+	// todo : Clusters have to be added to server before it starts, and before running the collector,
+	//  but can only be added to collector after it's running...
 	_ = mon.RegisterCluster(cluster)
-
-
 	log.Info("Cluster registered to server.")
+
+	// Run server
+	go mon.Start()
 
 	// It is less problematic to add a cluster to the collector if it's already running
 	go collector.Start()
