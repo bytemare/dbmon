@@ -24,56 +24,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type Error struct {
-	Code                 uint32   `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Error) Reset()         { *m = Error{} }
-func (m *Error) String() string { return proto.CompactTextString(m) }
-func (*Error) ProtoMessage()    {}
-func (*Error) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fd65e11b6a41de0a, []int{0}
-}
-
-func (m *Error) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Error.Unmarshal(m, b)
-}
-func (m *Error) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Error.Marshal(b, m, deterministic)
-}
-func (m *Error) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Error.Merge(m, src)
-}
-func (m *Error) XXX_Size() int {
-	return xxx_messageInfo_Error.Size(m)
-}
-func (m *Error) XXX_DiscardUnknown() {
-	xxx_messageInfo_Error.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Error proto.InternalMessageInfo
-
-func (m *Error) GetCode() uint32 {
-	if m != nil {
-		return m.Code
-	}
-	return 0
-}
-
-func (m *Error) GetMessage() string {
-	if m != nil {
-		return m.Message
-	}
-	return ""
-}
-
 // Request message to pull data from server
 type PullRequest struct {
 	ClusterId            string   `protobuf:"bytes,1,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
+	NbProbes             int32    `protobuf:"varint,2,opt,name=nbProbes,proto3" json:"nbProbes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -83,7 +37,7 @@ func (m *PullRequest) Reset()         { *m = PullRequest{} }
 func (m *PullRequest) String() string { return proto.CompactTextString(m) }
 func (*PullRequest) ProtoMessage()    {}
 func (*PullRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fd65e11b6a41de0a, []int{1}
+	return fileDescriptor_fd65e11b6a41de0a, []int{0}
 }
 
 func (m *PullRequest) XXX_Unmarshal(b []byte) error {
@@ -111,85 +65,100 @@ func (m *PullRequest) GetClusterId() string {
 	return ""
 }
 
+func (m *PullRequest) GetNbProbes() int32 {
+	if m != nil {
+		return m.NbProbes
+	}
+	return 0
+}
+
 // A report holds a cluster's information for a single request to the cluster
-type Report struct {
-	ClusterID            string   `protobuf:"bytes,1,opt,name=clusterID,proto3" json:"clusterID,omitempty"`
-	Status               int32    `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
-	Data                 string   `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Timestamp            string   `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+type Probe struct {
+	ClusterID string `protobuf:"bytes,1,opt,name=clusterID,proto3" json:"clusterID,omitempty"`
+	Status    string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	//google.protobuf.Timestamp timestamp = 3;
+	Timestamp            string   `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Len                  []int32  `protobuf:"varint,4,rep,packed,name=len,proto3" json:"len,omitempty"`
+	Data                 [][]byte `protobuf:"bytes,5,rep,name=data,proto3" json:"data,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Report) Reset()         { *m = Report{} }
-func (m *Report) String() string { return proto.CompactTextString(m) }
-func (*Report) ProtoMessage()    {}
-func (*Report) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fd65e11b6a41de0a, []int{2}
+func (m *Probe) Reset()         { *m = Probe{} }
+func (m *Probe) String() string { return proto.CompactTextString(m) }
+func (*Probe) ProtoMessage()    {}
+func (*Probe) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fd65e11b6a41de0a, []int{1}
 }
 
-func (m *Report) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Report.Unmarshal(m, b)
+func (m *Probe) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Probe.Unmarshal(m, b)
 }
-func (m *Report) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Report.Marshal(b, m, deterministic)
+func (m *Probe) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Probe.Marshal(b, m, deterministic)
 }
-func (m *Report) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Report.Merge(m, src)
+func (m *Probe) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Probe.Merge(m, src)
 }
-func (m *Report) XXX_Size() int {
-	return xxx_messageInfo_Report.Size(m)
+func (m *Probe) XXX_Size() int {
+	return xxx_messageInfo_Probe.Size(m)
 }
-func (m *Report) XXX_DiscardUnknown() {
-	xxx_messageInfo_Report.DiscardUnknown(m)
+func (m *Probe) XXX_DiscardUnknown() {
+	xxx_messageInfo_Probe.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Report proto.InternalMessageInfo
+var xxx_messageInfo_Probe proto.InternalMessageInfo
 
-func (m *Report) GetClusterID() string {
+func (m *Probe) GetClusterID() string {
 	if m != nil {
 		return m.ClusterID
 	}
 	return ""
 }
 
-func (m *Report) GetStatus() int32 {
+func (m *Probe) GetStatus() string {
 	if m != nil {
 		return m.Status
-	}
-	return 0
-}
-
-func (m *Report) GetData() string {
-	if m != nil {
-		return m.Data
 	}
 	return ""
 }
 
-func (m *Report) GetTimestamp() string {
+func (m *Probe) GetTimestamp() string {
 	if m != nil {
 		return m.Timestamp
 	}
 	return ""
 }
 
+func (m *Probe) GetLen() []int32 {
+	if m != nil {
+		return m.Len
+	}
+	return nil
+}
+
+func (m *Probe) GetData() [][]byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 // The response message containing all accumulated reports
 type PullReply struct {
-	ClusterId            string    `protobuf:"bytes,1,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
-	Reports              []*Report `protobuf:"bytes,3,rep,name=reports,proto3" json:"reports,omitempty"`
-	Error                *Error    `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
-	XXX_unrecognized     []byte    `json:"-"`
-	XXX_sizecache        int32     `json:"-"`
+	ClusterId            string   `protobuf:"bytes,1,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
+	Probes               []*Probe `protobuf:"bytes,3,rep,name=probes,proto3" json:"probes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *PullReply) Reset()         { *m = PullReply{} }
 func (m *PullReply) String() string { return proto.CompactTextString(m) }
 func (*PullReply) ProtoMessage()    {}
 func (*PullReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_fd65e11b6a41de0a, []int{3}
+	return fileDescriptor_fd65e11b6a41de0a, []int{2}
 }
 
 func (m *PullReply) XXX_Unmarshal(b []byte) error {
@@ -217,48 +186,39 @@ func (m *PullReply) GetClusterId() string {
 	return ""
 }
 
-func (m *PullReply) GetReports() []*Report {
+func (m *PullReply) GetProbes() []*Probe {
 	if m != nil {
-		return m.Reports
-	}
-	return nil
-}
-
-func (m *PullReply) GetError() *Error {
-	if m != nil {
-		return m.Error
+		return m.Probes
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterType((*Error)(nil), "dbmon.Error")
 	proto.RegisterType((*PullRequest)(nil), "dbmon.PullRequest")
-	proto.RegisterType((*Report)(nil), "dbmon.Report")
+	proto.RegisterType((*Probe)(nil), "dbmon.Probe")
 	proto.RegisterType((*PullReply)(nil), "dbmon.PullReply")
 }
 
 func init() { proto.RegisterFile("dbmon.proto", fileDescriptor_fd65e11b6a41de0a) }
 
 var fileDescriptor_fd65e11b6a41de0a = []byte{
-	// 263 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0x4f, 0x4b, 0xc4, 0x30,
-	0x10, 0xc5, 0xad, 0xfd, 0xb3, 0x74, 0xea, 0x82, 0xcc, 0x41, 0x82, 0x78, 0x28, 0xb9, 0x58, 0x10,
-	0x7a, 0xa8, 0x78, 0xf2, 0xe8, 0x0a, 0x7a, 0x93, 0x7c, 0x83, 0x6c, 0x3b, 0xa8, 0x98, 0x9a, 0x98,
-	0xa4, 0xc2, 0x7e, 0x7b, 0x69, 0xd2, 0x55, 0xd7, 0x83, 0xb7, 0xf9, 0xf3, 0xf2, 0xe6, 0xc7, 0x0b,
-	0x54, 0xc3, 0x76, 0xd4, 0xef, 0xad, 0xb1, 0xda, 0x6b, 0xcc, 0x43, 0xc3, 0x6f, 0x20, 0xbf, 0xb7,
-	0x56, 0x5b, 0x44, 0xc8, 0x7a, 0x3d, 0x10, 0x4b, 0xea, 0xa4, 0x59, 0x8b, 0x50, 0x23, 0x83, 0xd5,
-	0x48, 0xce, 0xc9, 0x67, 0x62, 0xc7, 0x75, 0xd2, 0x94, 0x62, 0xdf, 0xf2, 0x2b, 0xa8, 0x9e, 0x26,
-	0xa5, 0x04, 0x7d, 0x4c, 0xe4, 0x3c, 0x5e, 0x40, 0xd9, 0xab, 0xc9, 0x79, 0xb2, 0x8f, 0x43, 0x70,
-	0x28, 0xc5, 0xcf, 0x80, 0x1b, 0x28, 0x04, 0x19, 0x6d, 0x0f, 0x74, 0x9b, 0xbf, 0xba, 0x0d, 0x9e,
-	0x41, 0xe1, 0xbc, 0xf4, 0x93, 0x0b, 0xd7, 0x72, 0xb1, 0x74, 0x33, 0xda, 0x20, 0xbd, 0x64, 0x69,
-	0x78, 0x10, 0xea, 0xd9, 0xc9, 0xbf, 0x8e, 0xe4, 0xbc, 0x1c, 0x0d, 0xcb, 0xa2, 0xd3, 0xf7, 0x80,
-	0x7f, 0x42, 0x19, 0xf1, 0x8c, 0xda, 0xfd, 0x0f, 0x87, 0x97, 0xb0, 0xb2, 0x01, 0xce, 0xb1, 0xb4,
-	0x4e, 0x9b, 0xaa, 0x5b, 0xb7, 0x31, 0xa6, 0x88, 0x2c, 0xf6, 0x5b, 0xe4, 0x90, 0xd3, 0x9c, 0x54,
-	0xb8, 0x56, 0x75, 0x27, 0x8b, 0x2c, 0xa4, 0x27, 0xe2, 0xaa, 0xbb, 0x85, 0xf2, 0x81, 0xa4, 0xba,
-	0x7b, 0xa1, 0xfe, 0x0d, 0x5b, 0xc8, 0x66, 0x08, 0xc4, 0x45, 0xf9, 0x2b, 0xb0, 0xf3, 0xd3, 0x83,
-	0x99, 0x51, 0x3b, 0x7e, 0xb4, 0x2d, 0xc2, 0xc7, 0x5c, 0x7f, 0x05, 0x00, 0x00, 0xff, 0xff, 0x01,
-	0xa9, 0x53, 0x6d, 0xa7, 0x01, 0x00, 0x00,
+	// 242 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x90, 0x31, 0x4f, 0xc3, 0x30,
+	0x14, 0x84, 0x09, 0x8e, 0x23, 0xfc, 0xd2, 0xa1, 0x7a, 0x03, 0xb2, 0x2a, 0x06, 0x2b, 0x62, 0xf0,
+	0x94, 0xa1, 0x8c, 0x8c, 0x54, 0x02, 0x26, 0x2a, 0xff, 0x03, 0xa7, 0xb1, 0x04, 0xc2, 0x49, 0x4c,
+	0xec, 0x0c, 0x1d, 0xf9, 0xe7, 0x28, 0x76, 0x69, 0x80, 0x85, 0xed, 0xee, 0xec, 0x77, 0xd2, 0x77,
+	0x50, 0xb6, 0x4d, 0x37, 0xf4, 0xb5, 0x1b, 0x87, 0x30, 0x20, 0x8d, 0xa6, 0x7a, 0x84, 0x72, 0x3f,
+	0x59, 0xab, 0xcc, 0xc7, 0x64, 0x7c, 0xc0, 0x1b, 0x60, 0x07, 0x3b, 0xf9, 0x60, 0xc6, 0xe7, 0x96,
+	0x67, 0x22, 0x93, 0x4c, 0x2d, 0x01, 0x6e, 0xe0, 0xaa, 0x6f, 0xf6, 0xe3, 0xd0, 0x18, 0xcf, 0x2f,
+	0x45, 0x26, 0xa9, 0x3a, 0xfb, 0xea, 0x33, 0x03, 0x1a, 0xe5, 0xcf, 0x8e, 0xdd, 0xdf, 0x8e, 0x1d,
+	0x5e, 0x43, 0xe1, 0x83, 0x0e, 0x53, 0x6a, 0x60, 0xea, 0xe4, 0xe6, 0xab, 0xf0, 0xd6, 0x19, 0x1f,
+	0x74, 0xe7, 0x38, 0x49, 0x57, 0xe7, 0x00, 0xd7, 0x40, 0xac, 0xe9, 0x79, 0x2e, 0x88, 0xa4, 0x6a,
+	0x96, 0x88, 0x90, 0xb7, 0x3a, 0x68, 0x4e, 0x05, 0x91, 0x2b, 0x15, 0x75, 0xf5, 0x02, 0x2c, 0xc1,
+	0x38, 0x7b, 0xfc, 0x07, 0xe5, 0x16, 0x0a, 0x97, 0x40, 0x88, 0x20, 0xb2, 0xdc, 0xae, 0xea, 0x34,
+	0x4e, 0x44, 0x50, 0xa7, 0xb7, 0xed, 0x3d, 0xb0, 0x27, 0xa3, 0xed, 0xc3, 0xab, 0x39, 0xbc, 0x63,
+	0x0d, 0xf9, 0xdc, 0x8e, 0xf8, 0xfd, 0x75, 0xd9, 0x6d, 0xb3, 0xfe, 0x95, 0x39, 0x7b, 0xac, 0x2e,
+	0x9a, 0x22, 0x0e, 0x7d, 0xf7, 0x15, 0x00, 0x00, 0xff, 0xff, 0x9c, 0x7a, 0x3b, 0xaa, 0x77, 0x01,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

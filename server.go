@@ -2,7 +2,6 @@ package dbmon
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	pb "github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
@@ -13,23 +12,23 @@ import (
 	"sync"
 )
 
-// DBMon
+// DBMon holds the cache of reports send from the collector to serve them to clients
 type DBMon struct {
-	// TODO this may not be very memrory efficient, look for a better solution
+	// TODO this may not be very memory efficient, look for a better solution
 	clusters map[string]*Cluster
-	data     map[string][]*pb.Report // Cache to hold data to serve per cluster : a list of reports
-	mux      sync.Mutex              // Mutex to protect against concurrent read/write on cache
-	source   <-chan *pb.Report       // Channel through which data is arriving
-	sync     chan struct{}           // Stop signal channel
-	port     string                  // Network port to listen on
-	grpc     *grpc.Server            // The gRPC Server Handle
+	data     map[string][]*pb.Probe // Cache to hold data to serve per cluster : a list of reports
+	mux      sync.Mutex             // Mutex to protect against concurrent read/write on cache
+	source   <-chan *pb.Probe       // Channel through which data is arriving
+	sync     chan struct{}          // Stop signal channel
+	port     string                 // Network port to listen on
+	grpc     *grpc.Server           // The gRPC Server Handle
 }
 
 // NewDBMon initialises and returns a new DBMon struct
-func NewDBMon(port string, serverChan <-chan *pb.Report) *DBMon {
+func NewDBMon(port string, serverChan <-chan *pb.Probe) *DBMon {
 	return &DBMon{
 		clusters: make(map[string]*Cluster),
-		data:     make(map[string][]*pb.Report),
+		data:     make(map[string][]*pb.Probe),
 		mux:      sync.Mutex{},
 		source:   serverChan,
 		sync:     make(chan struct{}),
@@ -41,56 +40,93 @@ func NewDBMon(port string, serverChan <-chan *pb.Report) *DBMon {
 // Start starts the DBMon server
 func (mon *DBMon) Start() {
 
+	log.Info("Starting dbmon.")
+
 	lis, err := net.Listen("tcp", mon.port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	log.Info("dbmon listening.")
+
 	pb.RegisterHealCheckServer(mon.grpc, mon)
-	if err := mon.grpc.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
 
-loop:
-	for {
-		select {
+	log.Info("dbmon registered to grpc.")
 
-		case <-mon.sync:
-			log.Info("Server shutting down.")
-			break loop
+	/* Goroutine to fetch incoming probes */
+	go func() {
+	loop:
+		for {
+			select {
 
-		case r := <-mon.source:
-			log.Info("Server received a new report")
-			mon.mux.Lock()
-			mon.data[r.ClusterID] = append(mon.data[r.ClusterID], r)
+			case <-mon.sync:
+				log.Info("Server shutting down.")
+				break loop
+
+			case r := <-mon.source:
+				log.Info("Server received a new probe for ", r.ClusterID)
+				mon.mux.Lock()
+				// TODO : this here will work fine as long as the collector runs with the server
+				// TODO : but if they are split, we have to ensure that the clusterid is still registered in the server
+				probes := mon.data[r.ClusterID]
+				probes = append(probes, r)
+				mon.data[r.ClusterID] = probes
+				mon.mux.Unlock()
+			}
 		}
-	}
+	}()
 
+	log.Info("Server routine launched. Starting server.")
+
+	if err := mon.grpc.Serve(lis); err != nil {
+		mon.Stop()
+		log.Errorf("failed to serve: %v", err)
+	}
 }
 
 // RegisterCluster adds a new cluster to serve reports for
 func (mon *DBMon) RegisterCluster(cluster *Cluster) error {
 	if _, ok := mon.clusters[cluster.id]; ok {
 		log.Errorf("Cluster '%s' has already been registered.", cluster.id)
-		return errors.New(fmt.Sprintf("Cluster registration failed : value already exists '%s'.", cluster.id))
-	} else {
-		mon.clusters[cluster.id] = cluster
-		mon.data[cluster.id] = []*pb.Report{}
-		return nil
+		return fmt.Errorf("cluster registration failed : value already exists '%s'", cluster.id)
 	}
+
+	log.Infof("Registering new cluster '%s' to server", cluster.id)
+
+	mon.mux.Lock()
+	mon.clusters[cluster.id] = cluster
+	mon.data[cluster.id] = []*pb.Probe{}
+	mon.mux.Unlock()
+	return nil
 }
 
 // Returns the list of strings representing reports
-func (mon *DBMon) extractReports(clusterID string) []*pb.Report {
+func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*pb.Probe {
 
 	mon.mux.Lock()
-	reports := mon.data[clusterID]
-	output := make([]*pb.Report, len(reports))
-	copy(output, reports)
-	delete(mon.data, clusterID)
+	cache := mon.data[clusterID]
+
+	if len(cache) == 0 {
+		mon.mux.Unlock()
+		return nil
+	}
+
+	if nbProbes <= 0 {
+		nbProbes = len(cache)
+	}
+	probes := make([]*pb.Probe, nbProbes, nbProbes)
+	copy(probes[:nbProbes], cache[:nbProbes])
+
+	// Delete head elements : this method avoids memory leaks
+	copy(cache, cache[nbProbes:])
+	for i := nbProbes; i < len(cache); i++ {
+		cache[i] = nil
+	}
+	cache = cache[:len(cache)-nbProbes]
+
 	mon.mux.Unlock()
 
-	return output
+	return probes
 }
 
 // Stop stops the DBMon server
@@ -100,38 +136,25 @@ func (mon *DBMon) Stop() {
 }
 
 /**
-** Implement the gRPC
+** Implement the gRPC interface
  */
 
-// SayHello implements HealthCheckerServer
+// Pull implements HealthCheckerServer
 func (mon DBMon) Pull(ctx context.Context, in *pb.PullRequest) (*pb.PullReply, error) {
-	log.Info("Received pull for : %v", in.ClusterId)
+	log.Infof("Received pull for : %s", in.ClusterId)
+
+	// Verify if cluster is registered
+	if _, ok := mon.clusters[in.ClusterId]; !ok {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("Cluster was not found : '%s'", in.ClusterId))
+	}
 
 	reply := &pb.PullReply{
 		ClusterId:            in.ClusterId,
-		Reports:              nil,
-		Error:                nil,
+		Probes:               mon.extractProbes(in.ClusterId, int(in.NbProbes)),
 		XXX_NoUnkeyedLiteral: struct{}{},
 		XXX_unrecognized:     nil,
 		XXX_sizecache:        0,
 	}
-
-	// Verify if cluster is registered
-	if _, ok := mon.clusters[in.ClusterId]; !ok {
-		/*err := &pb.Error{
-			Code:                 uint32(5),
-			Message:              "This cluster is not registered",
-			XXX_NoUnkeyedLiteral: struct{}{},
-			XXX_unrecognized:     nil,
-			XXX_sizecache:        0,
-		}
-		reply.Error = err*/
-		err1 := status.Error(codes.NotFound, "id was not found")
-		return nil, err1
-		//return reply, errors.New(err.Message)
-	}
-
-	reply.Reports = mon.extractReports(in.ClusterId)
 
 	return reply, nil
 }

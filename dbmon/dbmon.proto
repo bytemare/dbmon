@@ -2,36 +2,32 @@ syntax = "proto3";
 
 package dbmon;
 
+//import "google/protobuf/timestamp.proto";
+
 // A HealthCheck gRPC service
 service HealCheck {
     // Ask for all available reports
     rpc Pull(PullRequest) returns (PullReply) {}
 }
 
-
-message Error {
-    uint32 code = 1;
-    string message = 2;
-    //Code message = 2;
-}
-
-
 // Request message to pull data from server
 message PullRequest {
     string clusterId = 1;
+    int32   nbProbes = 2;
 }
 
 // A report holds a cluster's information for a single request to the cluster
-message Report {
+message Probe {
     string clusterID = 1;
-    int32 status = 2;
-    string data = 3;
-    string timestamp = 4;
+    string status = 2;
+    //google.protobuf.Timestamp timestamp = 3;
+    string timestamp = 3;
+    repeated int32 len = 4;
+    repeated bytes data = 5;
 }
 
 // The response message containing all accumulated reports
 message PullReply {
     string clusterId = 1;
-    repeated Report reports = 3;
-    Error error = 4;
+    repeated Probe probes = 3;
 }
