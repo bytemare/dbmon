@@ -1,6 +1,25 @@
 # dbmon
 A cluster monitoring tool.
 
+## Testing
+
+The platform is _functional_. To see it live, you must first run a cluster, see instructions here : https://www.cockroachlabs.com/docs/stable/start-a-local-cluster-in-docker.html
+
+If you changed the port number used id the instructions, please adapt it in the server test program : Test/server/dbmon.go
+Run the server :
+
+    $ go run Tests/server/dbmon.go
+
+Then, in a different terminal
+
+    $ go run Tests/client/dbmon-client.go
+
+These are only showcase programs, and don't yet implement all desired functionalities (See Roadmap below).
+
+To stop the server, interrupt with ctrl+c.  
+
+## 
+
 > Fancy sparkling pew-pew badges
 ___
 > What it does
@@ -43,36 +62,38 @@ Finally, start the client :
 
 ## HLD
 
+Think of the platform as a cache, or a broker. It continuously fetches data from your cluster(s), holds them warm, and relays it back to you.
+The only thing you need is a compatible connector, the connection plug that links the platform to your cluster. 
+
 The Architecture can be represented like this
 
     
-         Client  Client  Client
-             \     |     /
-              \    |    /
-               \   |   /
-                \--|--/------ gRPC
-                 Server 
-                   |--------- gRPC
-                   |
-                   | ---- Cache ?
-                   |
-                Collector
-         __________|__________
-         Agent   Agent   Agent
-           |       |       |
-           w       w       w  <-- Connectors  
-           |       |       |
-    CockroachDB  Istio   Whatever
+         Client  Client  Client             
+             \     |     /                  
+              \    |    /                   
+               \   |   /                    
+                \--|--/------ gRPC          
+                 Server                     
+                   |--------- gRPC          
+                   |                        
+                   | ---- Cache ?           
+                   |                        
+                Collector                   
+         __________|__________              
+         Agent   Agent   Agent              
+           |       |       |                
+           w       w       w  <-- Connectors
+           |       |       |                
+    CockroachDB  Istio   Whatever           
 
 You can monitor whatever you want, as long as it exposes an API and you have a connector for it.
-
 Some connectors are already implemented (_for now CockroachDB only_).
 
 A connector is a simple piece of code of go implementing the Connector interface, that runs with the Collector.
 
 - Server and Collector are services that run in containers, so you can run them on the same machine or distribute them.
 
-- The client is a go program, so you'll need a working go environment.
+- The client is piece of software your machine, or your monitoring tool.
 
 ## Use / Adaptation
 
@@ -89,25 +110,49 @@ step-by-step explanation.
 - well ... make it work, duh.
 - authentication collector <-> cluster (no idea, yet)
 - authentication server <-> collector (set up instance pki ?)
-- authentication client <-> server (webauthn + macaroons ?)
+- authentication client <-> server (mTLS ? WebAuthN + macaroons ?)
 
-## Ideas
+## Roadmap
 
 v0 :
 - [x] Agents are individual go routines that use a connector to communicate with a cluster ( agent 1:1 cluster )
 - [x] A connector defines the requests to be send to a type of cluster, and implements the a client connection to it
-- [ ] Connectors retrieve health status from clusters
+- [x] Connectors retrieve health status from clusters
 - [x] When an agent gets a response, it hands it to the collector
 - [x] The collector sends every result to the server as a report : A report is the response for a call to the cluster
 - [x] Server holds a cache : a key:value map, that associates an identified cluster to a list of reports.
-- [ ] Client operates unary RPC from to server and gets all the reports in a single response
+- [x] Client operates unary RPC from to server and gets all the reports in a single response
+- [ ] Purge data to only keep desired ones ( in the connector ?)
+    - [ ] Cluster's status
+    - [ ] Useful information about health
+        - [ ] Nodes
+            - [ ] Number of nodes that are up
+            - [ ] decommissioned or shutting down
+            - [ ] initialising
+        - [ ] Capacity usage ( in % )
+        - [ ] Memory usage ( in % ) - per node ?
+        - [ ] Unavailable ranges
+        - [ ] Queries per second
+        - [ ] Heartbeat Latency: 99th percentile
+        
+        More ? :        
+        - [ ] Round-trip time to reach the cluster from the platform
+        - [ ] Number of replicas
+        - [ ] Number of pending tasks
+        - [ ] Oldest task (time the earliest initiated, still pending, task has been waiting for)
 - [ ] Server/Collector are bundled and Dockerised
+- [ ] Unit tests
+- [ ] Better logging, and to a file
+- [ ] Better documentation
 
 v1 :
 - [ ] Pub/Sub pattern in gRPC between client and server : the server streams continuously reports to the client
 - [ ] Separate server and collector, and implement a gRPC interface between them
-- [ ] Continuously stream reports from the collector to the server 
+- [ ] Continuously stream reports from the collector to the server
+- [ ] Add more connectors 
 - [ ] Configure with yaml files
 
 v2 :
 - [ ] Operate a better cache system, maybe using a database
+- [ ] Clients can send commands, like 'health' to get a healthcheck, 'info' for general info, and more ad-hoc commands
+    ( a command must then be registered in the connector )
