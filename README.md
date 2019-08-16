@@ -4,8 +4,8 @@ A cluster monitoring tool.
 ## Testing
 
 The platform is _functional_. To see it live, you must first run a cluster, see instructions here : https://www.cockroachlabs.com/docs/stable/start-a-local-cluster-in-docker.html
+_NB: If you changed the port number used id the instructions, please adapt it in the server test program : Test/server/dbmon.go_
 
-If you changed the port number used id the instructions, please adapt it in the server test program : Test/server/dbmon.go
 Run the server :
 
     $ go run Tests/server/dbmon.go
@@ -16,7 +16,7 @@ Then, in a different terminal
 
 These are only showcase programs, and don't yet implement all desired functionalities (See Roadmap below).
 
-To stop the server, interrupt with ctrl+c.  
+To stop the server gracefully, interrupt with ctrl+c.  
 
 ## 
 
@@ -25,7 +25,7 @@ ___
 > What it does
 ___
 
-
+> Explanation draft
 > - Simplicity in use
 >    - Most of the stuff runs in containers. Yay !
 >    - When using existing connectors, simply fill yaml config file
@@ -37,7 +37,7 @@ ___
 ## Installation / Prerequisites
 
 > client
-> - PS / shell
+> - shell / ps
 > - go
 ___
 > server
@@ -93,24 +93,18 @@ A connector is a simple piece of code of go implementing the Connector interface
 
 - Server and Collector are services that run in containers, so you can run them on the same machine or distribute them.
 
-- The client is piece of software your machine, or your monitoring tool.
+- The client is a piece of software your machine, or your monitoring tool.
 
 ## Use / Adaptation
 
 ### Connecting dbmon to your cluster
 
-step-by-step explanation.
+> step-by-step explanation.
 
 ### Create a new connector for your needs
 
-step-by-step explanation.
+> step-by-step explanation.
 
-## Todo
-
-- well ... make it work, duh.
-- authentication collector <-> cluster (no idea, yet)
-- authentication server <-> collector (set up instance pki ?)
-- authentication client <-> server (mTLS ? WebAuthN + macaroons ?)
 
 ## Roadmap
 
@@ -137,7 +131,6 @@ v0 :
         
         More ? :        
         - [ ] Round-trip time to reach the cluster from the platform
-        - [ ] Number of replicas
         - [ ] Number of pending tasks
         - [ ] Oldest task (time the earliest initiated, still pending, task has been waiting for)
 - [ ] Server/Collector are bundled and Dockerised
@@ -151,8 +144,11 @@ v1 :
 - [ ] Continuously stream reports from the collector to the server
 - [ ] Add more connectors 
 - [ ] Configure with yaml files
+- [ ] authentication server <-> collector (set up instance pki ?)
+- [ ] authentication client <-> server (mTLS ? WebAuthN + macaroons ?)
 
 v2 :
 - [ ] Operate a better cache system, maybe using a database
 - [ ] Clients can send commands, like 'health' to get a healthcheck, 'info' for general info, and more ad-hoc commands
     ( a command must then be registered in the connector )
+- [ ] Authentication collector <-> cluster (no idea, yet)
