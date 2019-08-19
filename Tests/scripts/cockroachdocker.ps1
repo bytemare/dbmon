@@ -15,6 +15,9 @@ $cluster_port = "26257:26257"
 $cluster_name = "roachnet"
 $database_volume = "`"//c/Users/$($user)/cockroach-data/$($node1):/cockroach/cockroach-data`""
 
+# Docker image
+$image = "cockroachdb/cockroach:v19.1.4"
+
 function stop
 {
     foreach ($node in $args) {
@@ -26,10 +29,10 @@ function stop
 
 if ( $args[0] -eq "start" ) {
     Write-Host "Starting cluster ..."
-    docker run -d --name=$node1 --hostname=$node1 --net=$cluster_name -p $cluster_port -p 8080:8080 -v $database_volume cockroachdb/cockroach:v19.1.4 start --insecure
+    docker run -d --name=$node1 --hostname=$node1 --net=$cluster_name -p $cluster_port -p $outside_port -v $database_volume $image start --insecure
     if ($?) {
-        docker run -d --name=$node2 --hostname=$node2 --net=$cluster_name -v $database_volume cockroachdb/cockroach:v19.1.4 start --insecure --join=$node1
-        docker run -d --name=$node3 --hostname=$node3 --net=$cluster_name -v $database_volume cockroachdb/cockroach:v19.1.4 start --insecure --join=$node1
+        docker run -d --name=$node2 --hostname=$node2 --net=$cluster_name -v $database_volume $image start start --insecure --join=$node1
+        docker run -d --name=$node3 --hostname=$node3 --net=$cluster_name -v $database_volume $image start start --insecure --join=$node1
         if ($?) {
             Write-Host "Success."
         } else {
