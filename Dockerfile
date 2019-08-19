@@ -16,7 +16,7 @@ RUN GOOS=linux GOARCH=amd64 go build -o /bin/dbmon ./app/dbmon.go
 # 2. Build image
 FROM scratch
 COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder /bin/dbmon $GOPATH/bin/dbmon
+COPY --from=builder /bin/dbmon /bin/dbmon
 USER dbmon
 EXPOSE 4000
-ENTRYPOINT ["$GOPATH/bin/dbmon"]
+ENTRYPOINT ["/bin/dbmon"]
