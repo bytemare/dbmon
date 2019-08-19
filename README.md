@@ -117,17 +117,19 @@ v0 :
 - [x] Server holds a cache : a key:value map, that associates an identified cluster to a list of reports.
 - [x] Client operates unary RPC from to server and gets all the reports in a single response
 - [ ] Purge data to only keep desired ones ( in the connector ?)
-    - [ ] Cluster's status
+    - [x] Cluster's status
     - [ ] Useful information about health
-        - [ ] Nodes
-            - [ ] Number of nodes that are up
+        - [ ] Ranges / Replicas / Nodes
+            - [x] Number of ranges
+            - [x] Number of nodes that are up
             - [ ] decommissioned or shutting down
             - [ ] initialising
-        - [ ] Capacity usage ( in % )
-        - [ ] Memory usage ( in % ) - per node ?
+        - [x] Capacity usage ( in % )
+        - [ ] Memory usage ( in % )
         - [ ] Unavailable ranges
-        - [ ] Queries per second
+        - [x] Queries per second
         - [ ] Heartbeat Latency: 99th percentile
+        - [x] Mean clock offset with other nodes in nanoseconds
         
         More ? :        
         - [ ] Round-trip time to reach the cluster from the platform
