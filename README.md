@@ -135,6 +135,7 @@ v0 :
         - [ ] Round-trip time to reach the cluster from the platform
         - [ ] Number of pending tasks
         - [ ] Oldest task (time the earliest initiated, still pending, task has been waiting for)
+- [ ] Add parameters as command line arguments
 - [ ] Server/Collector are bundled and Dockerised
 - [ ] Unit tests
 - [ ] Better logging, and to a file
