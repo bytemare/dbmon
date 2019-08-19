@@ -8,8 +8,9 @@ TODO : Maybe using the cockroachdb command could help : but how would we do this
 */
 
 import (
+
 	"encoding/json"
-	"github.com/bytemare/dbmon/dbmon"
+	"github.com/bytemare/dbmon"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"

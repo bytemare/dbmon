@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/bytemare/dbmon"
 	"github.com/bytemare/dbmon/connectors/CockroachDB"
-	pb "github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
@@ -17,7 +16,7 @@ const clusterId = "roachy"
 
 func main() {
 
-	source := make(chan *pb.Probe)
+	source := make(chan *dbmon.Probe)
 
 	// Set up components
 	mon := dbmon.NewDBMon(serverPort, source)

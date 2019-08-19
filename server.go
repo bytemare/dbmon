@@ -3,7 +3,6 @@ package dbmon
 import (
 	"context"
 	"fmt"
-	pb "github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,19 +15,19 @@ import (
 type DBMon struct {
 	// TODO this may not be very memory efficient, look for a better solution
 	clusters map[string]*Cluster
-	data     map[string][]*pb.Probe // Cache to hold data to serve per cluster : a list of reports
+	data     map[string][]*Probe // Cache to hold data to serve per cluster : a list of reports
 	mux      sync.Mutex             // Mutex to protect against concurrent read/write on cache
-	source   <-chan *pb.Probe       // Channel through which data is arriving
+	source   <-chan *Probe       // Channel through which data is arriving
 	sync     chan struct{}          // Stop signal channel
 	port     string                 // Network port to listen on
 	grpc     *grpc.Server           // The gRPC Server Handle
 }
 
 // NewDBMon initialises and returns a new DBMon struct
-func NewDBMon(port string, serverChan <-chan *pb.Probe) *DBMon {
+func NewDBMon(port string, serverChan <-chan *Probe) *DBMon {
 	return &DBMon{
 		clusters: make(map[string]*Cluster),
-		data:     make(map[string][]*pb.Probe),
+		data:     make(map[string][]*Probe),
 		mux:      sync.Mutex{},
 		source:   serverChan,
 		sync:     make(chan struct{}),
@@ -49,7 +48,7 @@ func (mon *DBMon) Start() {
 
 	log.Info("dbmon listening.")
 
-	pb.RegisterHealCheckServer(mon.grpc, mon)
+	RegisterHealCheckServer(mon.grpc, mon)
 
 	log.Info("dbmon registered to grpc.")
 
@@ -95,13 +94,13 @@ func (mon *DBMon) RegisterCluster(cluster *Cluster) error {
 
 	mon.mux.Lock()
 	mon.clusters[cluster.id] = cluster
-	mon.data[cluster.id] = []*pb.Probe{}
+	mon.data[cluster.id] = []*Probe{}
 	mon.mux.Unlock()
 	return nil
 }
 
 // Returns the list of strings representing reports
-func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*pb.Probe {
+func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*Probe {
 
 	mon.mux.Lock()
 	cache := mon.data[clusterID]
@@ -114,7 +113,7 @@ func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*pb.Probe {
 	if nbProbes <= 0 {
 		nbProbes = len(cache)
 	}
-	probes := make([]*pb.Probe, nbProbes, nbProbes)
+	probes := make([]*Probe, nbProbes, nbProbes)
 	copy(probes[:nbProbes], cache[:nbProbes])
 
 	// Delete head elements : this method avoids memory leaks
@@ -140,7 +139,7 @@ func (mon *DBMon) Stop() {
  */
 
 // Pull implements HealthCheckerServer
-func (mon DBMon) Pull(ctx context.Context, in *pb.PullRequest) (*pb.PullReply, error) {
+func (mon DBMon) Pull(ctx context.Context, in *PullRequest) (*PullReply, error) {
 	log.Infof("Received pull for : %s", in.ClusterId)
 
 	// Verify if cluster is registered
@@ -148,7 +147,7 @@ func (mon DBMon) Pull(ctx context.Context, in *pb.PullRequest) (*pb.PullReply, e
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("Cluster was not found : '%s'", in.ClusterId))
 	}
 
-	reply := &pb.PullReply{
+	reply := &PullReply{
 		ClusterId:            in.ClusterId,
 		Probes:               mon.extractProbes(in.ClusterId, int(in.NbProbes)),
 		XXX_NoUnkeyedLiteral: struct{}{},

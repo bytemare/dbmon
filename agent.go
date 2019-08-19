@@ -1,7 +1,6 @@
 package dbmon
 
 import (
-	"github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -11,12 +10,12 @@ import (
 type agent struct {
 	cluster  *Cluster            // Target cluster
 	requests []request           // Map to a cluster a slice of possible requests
-	sink     chan<- *dbmon.Probe // Channel to send collected data to
+	sink     chan<- *Probe // Channel to send collected data to
 	sync     chan struct{}       // Channel to be told to stop
 	wg       *sync.WaitGroup     // Synchronisation
 }
 
-func newAgent(cluster *Cluster, sink chan<- *dbmon.Probe, wg *sync.WaitGroup) *agent {
+func newAgent(cluster *Cluster, sink chan<- *Probe, wg *sync.WaitGroup) *agent {
 	return &agent{
 		cluster:  cluster,
 		requests: []request{},

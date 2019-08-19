@@ -1,7 +1,6 @@
 package dbmon
 
 import (
-	"github.com/bytemare/dbmon/dbmon"
 	"time"
 )
 
@@ -10,7 +9,7 @@ import (
 // It will adapt generic queries to the specified database endpoint.
 type Connector interface {
 	// Probe asks the connector to operate a probe to the cluster
-	Probe() (probe *dbmon.Probe, err error)
+	Probe() (probe *Probe, err error)
 
 	// Period returns a connector's period attribute
 	Period() time.Duration

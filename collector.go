@@ -2,7 +2,6 @@ package dbmon
 
 import (
 	"errors"
-	"github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -14,8 +13,8 @@ const timeLayout = "2006-01-02 15:04:05:1234"
 type Collector struct {
 	clusters   map[string]*Cluster // List of currently registered clusters
 	agents     map[*Cluster]*agent // List of running agents
-	sink       chan *dbmon.Probe   // Channel agents send their data to
-	serverChan chan<- *dbmon.Probe // Channel to send data to
+	sink       chan *Probe   // Channel agents send their data to
+	serverChan chan<- *Probe // Channel to send data to
 	newCluster chan Cluster        // Channel to receive new requests for cluster registration
 
 	// Synchronisation for closing
@@ -24,11 +23,11 @@ type Collector struct {
 }
 
 // NewCollector initialises and returns a new Collector struct
-func NewCollector(serverChan chan<- *dbmon.Probe) *Collector {
+func NewCollector(serverChan chan<- *Probe) *Collector {
 	return &Collector{
 		clusters:   make(map[string]*Cluster),
 		agents:     make(map[*Cluster]*agent),
-		sink:       make(chan *dbmon.Probe),
+		sink:       make(chan *Probe),
 		serverChan: serverChan,
 		newCluster: make(chan Cluster, 1000),
 		sync:       make(chan struct{}),
