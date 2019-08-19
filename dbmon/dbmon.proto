@@ -20,10 +20,9 @@ message PullRequest {
 message Probe {
     string clusterID = 1;
     string status = 2;
-    //google.protobuf.Timestamp timestamp = 3;
-    string timestamp = 3;
-    repeated int32 len = 4;
-    repeated bytes data = 5;
+    bytes data = 3;
+    string timestamp = 4;
+    //google.protobuf.Timestamp timestamp = 4;
 }
 
 // The response message containing all accumulated reports
