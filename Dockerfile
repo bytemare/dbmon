@@ -4,9 +4,12 @@ RUN apk update && apk add --no-cache git
 RUN adduser -D -g '' dbmon
 
 WORKDIR $GOPATH/src/github.com/bytemare/dbmon/
-COPY *.go dmon/* connectors/* app/* ./
+COPY *.go ./
+COPY dbmon ./dbmon/
+COPY connectors ./connetors/
+COPY app ./app/
 RUN go get -d -v ./...
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" app/dbmon.go -o $GOPATH/bin/dbmon
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -a -installsuffix cgo app/dbmon.go -o $GOPATH/bin/dbmon
 
 # 2. Build image
 FROM scratch
