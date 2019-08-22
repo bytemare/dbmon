@@ -139,7 +139,7 @@ func (mon *DBMon) Stop() {
  */
 
 // Pull implements HealthCheckerServer
-func (mon DBMon) Pull(ctx context.Context, in *PullRequest) (*PullReply, error) {
+func (mon *DBMon) Pull(ctx context.Context, in *PullRequest) (*PullReply, error) {
 	log.Infof("Received pull for : %s", in.ClusterId)
 
 	// Verify if cluster is registered
