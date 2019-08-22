@@ -53,7 +53,7 @@ type NodeStats struct {
 Top structures specific to requests
 */
 
-// Health
+// Health holds general information about a node
 // /health
 // /healthready
 type Health struct {
@@ -82,7 +82,7 @@ type Health struct {
 	} `json:"systemInfo"`
 }
 
-type Metrics struct {
+type metrics struct {
 	BuildTimestamp                           int     `json:"build.timestamp"`
 	ChangefeedBufferEntriesIn                int     `json:"changefeed.buffer_entries.in"`
 	ChangefeedBufferEntriesOut               int     `json:"changefeed.buffer_entries.out"`
@@ -457,8 +457,7 @@ type Metrics struct {
 	TxnRestartsWritetoooldmulti              int     `json:"txn.restarts.writetoooldmulti"`
 }
 
-// AllNodes
-// /_status/nodes
+// AllNodes holds the json response from /_status/nodes
 type AllNodes struct {
 	Nodes []struct {
 		Desc struct {
@@ -499,7 +498,7 @@ type AllNodes struct {
 		} `json:"buildInfo"`
 		StartedAt     string  `json:"startedAt"`
 		UpdatedAt     string  `json:"updatedAt"`
-		Metrics       Metrics `json:"metrics"`
+		Metrics       metrics `json:"metrics"`
 		StoreStatuses []struct {
 			Desc struct {
 				StoreID int `json:"storeId"`
@@ -803,8 +802,7 @@ type AllNodes struct {
 	} `json:"nodes"`
 }
 
-// ClusterRaft
-// /_status/raft
+// ClusterRaft holds the json response from /_status/raft
 type ClusterRaft struct {
 	/*Ranges struct {
 		Num1 struct {
