@@ -1,6 +1,7 @@
 # dbmon
 A cluster monitoring tool.
 
+[![Build Status](https://travis-ci.com/bytemare/dbmon.svg?branch=master)](https://travis-ci.com/bytemare/dbmon)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bytemare/dbmon)](https://goreportcard.com/report/github.com/bytemare/dbmon)
 [![codebeat badge](https://codebeat.co/badges/7e86ba65-e7b9-4982-9996-6b42c0eb763e)](https://codebeat.co/projects/github-com-bytemare-dbmon-master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f906e2104b24db88596a918c25e59e6)](https://www.codacy.com/app/bytemare/dbmon?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bytemare/dbmon&amp;utm_campaign=Badge_Grade)
