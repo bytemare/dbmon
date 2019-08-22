@@ -1,4 +1,4 @@
-// cockroachConnector implements the Connector interface
+// Package cockroachdb implements the dbmon Connector interface
 // It hols everything needed to connect to a CockroachDB cluster and retrieve data
 package cockroachdb
 
@@ -33,8 +33,9 @@ const (
 	reqClusterRange   = "/_status/range/1"
 )
 
+// RoachConnector is the struct to interact with, holding connection info about the target cluster
 type RoachConnector struct {
-	clusterId string
+	clusterID string
 	ip        string
 	port      string
 	period    time.Duration // Period to repetitively interrogate the cluster
@@ -42,11 +43,11 @@ type RoachConnector struct {
 	netClient *http.Client
 }
 
-// New returns a new initialised connector for a CockRoachDB endpoint
+// NewConnector returns a new initialised connector for a CockRoachDB endpoint
 func NewConnector(id string, ip string, port string) *RoachConnector {
 	log.Warn("Warning : DEMO ! CockroachDB should not use vanilla http.Client for production use.")
 	return &RoachConnector{
-		clusterId: id,
+		clusterID: id,
 		ip:        ip,
 		port:      port,
 		period:    roachPeriod,
@@ -215,7 +216,7 @@ func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte
 // Probe operates requests to the cluster
 func (rc RoachConnector) Probe() (probe *dbmon.Probe, err error) {
 
-	log.Info("Sending request to Cluster ", rc.clusterId)
+	log.Info("Sending request to Cluster ", rc.clusterID)
 	/*status, res, err := rc.getHealth(rc.ip + ":" + rc.port + reqHealth)
 	if err != nil {
 		return nil, err
@@ -234,7 +235,7 @@ func (rc RoachConnector) Probe() (probe *dbmon.Probe, err error) {
 	}
 
 	probe = &dbmon.Probe{
-		ClusterID:            rc.clusterId,
+		ClusterID:            rc.clusterID,
 		Status:               "200",
 		Timestamp:            time.Now().String(),
 		Data:                 payload,
