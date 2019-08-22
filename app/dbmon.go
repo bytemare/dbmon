@@ -12,7 +12,7 @@ import (
 const addr = "http://localhost"
 const serverPort = ":4000"
 const clusterPort = "8080"
-const clusterId = "roachy"
+const clusterID = "roachy"
 
 func main() {
 
@@ -21,8 +21,8 @@ func main() {
 	// Set up components
 	mon := dbmon.NewDBMon(serverPort, source)
 	collector := dbmon.NewCollector(source)
-	roachCon := cockroachdb.NewConnector(clusterId, addr, clusterPort)
-	cluster := dbmon.NewCluster(clusterId, roachCon)
+	roachCon := cockroachdb.NewConnector(clusterID, addr, clusterPort)
+	cluster := dbmon.NewCluster(clusterID, roachCon)
 
 	// Register Cluster to server
 	// todo : Clusters have to be added to server before it starts, and before running the collector,
