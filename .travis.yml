@@ -13,7 +13,7 @@ dist: trusty
 
 branches:
   only:
-    - master
+    - dev
 
 addons:
   sonarcloud:
