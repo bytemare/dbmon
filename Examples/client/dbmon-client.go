@@ -72,7 +72,6 @@ func (c *connection) close() {
 	c.Cancel()
 }
 
-
 // Pull implements the grpc client interface
 func (c *connection) Pull() (*dbmon.PullReply, error) {
 
