@@ -8,11 +8,11 @@ import (
 
 // agent is dedicated routine to handle connections to a cluster
 type agent struct {
-	cluster  *Cluster            // Target cluster
-	requests []request           // Map to a cluster a slice of possible requests
-	sink     chan<- *Probe // Channel to send collected data to
-	sync     chan struct{}       // Channel to be told to stop
-	wg       *sync.WaitGroup     // Synchronisation
+	cluster  *Cluster        // Target cluster
+	requests []request       // Map to a cluster a slice of possible requests
+	sink     chan<- *Probe   // Channel to send collected data to
+	sync     chan struct{}   // Channel to be told to stop
+	wg       *sync.WaitGroup // Synchronisation
 }
 
 func newAgent(cluster *Cluster, sink chan<- *Probe, wg *sync.WaitGroup) *agent {

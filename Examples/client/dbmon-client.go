@@ -17,8 +17,8 @@ import (
 const addr = "localhost"
 const port = "4000"
 const clusterId = "roachy"
-const refresh  = 2 * time.Second
-const timeout = 10*time.Second
+const refresh = 2 * time.Second
+const timeout = 10 * time.Second
 
 func printNode(node *cockroachdb.NodeStats) {
 	log.Infof("Node Info : %d", node.ID)
@@ -88,7 +88,6 @@ func (c *Connection) Pull() (*dbmon.PullReply, error) {
 	return reply, nil
 }
 
-
 func integerByteCountSI(b int64) string {
 	const unit = 1000
 	if b < unit {
@@ -105,15 +104,15 @@ func integerByteCountSI(b int64) string {
 
 func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats) *analysis {
 	a := &analysis{
-		clusterId:     clusterID,
-		timestamp:     timestamp,
-		nodes:         len(nodes),
-		usedCap:       "",
-		availableCap:  "",
-		queries:       0,
-		heartbeatP99:  "",
-		ranges:        0,
-		highestOffset: 0,
+		clusterId:           clusterID,
+		timestamp:           timestamp,
+		nodes:               len(nodes),
+		usedCap:             "",
+		availableCap:        "",
+		queries:             0,
+		heartbeatP99:        "",
+		ranges:              0,
+		highestOffset:       0,
 		highestOffsetNodeId: 0,
 	}
 
@@ -135,7 +134,7 @@ func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats)
 
 	// TODO P99
 
-	a.usedCap = fmt.Sprintf("%.2f%%", 100 * float64(usedCap) / float64(availCap))
+	a.usedCap = fmt.Sprintf("%.2f%%", 100*float64(usedCap)/float64(availCap))
 	a.availableCap = integerByteCountSI(availCap)
 
 	return a
@@ -170,27 +169,20 @@ func pullPrint(c *Connection) error {
 	return nil
 }
 
-
-
-
 func main() {
 
 	// Set up a connection
 	connection := setupConnection()
 	defer connection.close()
 
-
 	// Sync
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	stop := make(chan struct{})
 
-
 	//time.Sleep(3 * time.Second)
 
 	ticker := time.NewTicker(refresh)
-
-
 
 	go func() {
 
@@ -200,15 +192,14 @@ func main() {
 			case <-stop:
 				return
 
-			case <- ticker.C:
+			case <-ticker.C:
 				err := pullPrint(connection)
 				if err != nil {
-					sigs<-syscall.SIGINT
+					sigs <- syscall.SIGINT
 				}
 			}
 		}
 	}()
-
 
 	// Intercept interruption
 
@@ -216,7 +207,7 @@ func main() {
 	s := <-sigs
 	log.Info("Signal received : ", s.String())
 
-	stop<- struct{}{}
+	stop <- struct{}{}
 	close(stop)
 	ticker.Stop()
 
@@ -232,17 +223,16 @@ func main() {
  */
 
 const (
-	clearConsole 	= "\x1Bc"
-	topLine			= green + "[dbmon]" + blue +" \tCluster :  %s" + stop + "\t\tLast updated : %s"
+	clearConsole = "\x1Bc"
+	topLine      = green + "[dbmon]" + blue + " \tCluster :  %s" + stop + "\t\tLast updated : %s"
 	//noData			= "\t\t\t--- No available data ---"
-	summary			= "Health check summary :"
-	summaryNodes	= "Nodes : %d"
-	summaryUsedCap	= "Used Capacity : %s / %s"
-	summaryQueries	= "Queries per second : %.2f"
-	summaryP99		= "Heartbeat P99 Latency : %s ms"
-	database		= "Ranges : %d"
-	highestOffset	= "Highest Clock offset %d ns ( node %d )"
-
+	summary        = "Health check summary :"
+	summaryNodes   = "Nodes : %d"
+	summaryUsedCap = "Used Capacity : %s / %s"
+	summaryQueries = "Queries per second : %.2f"
+	summaryP99     = "Heartbeat P99 Latency : %s ms"
+	database       = "Ranges : %d"
+	highestOffset  = "Highest Clock offset %d ns ( node %d )"
 
 	// ANSI Colours
 	red   = "\033[31;1;1m"
@@ -252,22 +242,22 @@ const (
 )
 
 type analysis struct {
-	clusterId	string
-	timestamp	string // time.Now().Format("2019-08-17 23-03-18:745")
-	nodes		int
-	usedCap		string
-	availableCap string
-	queries		float64
-	heartbeatP99 string
-	ranges		uint
-	highestOffset	uint32
+	clusterId           string
+	timestamp           string // time.Now().Format("2019-08-17 23-03-18:745")
+	nodes               int
+	usedCap             string
+	availableCap        string
+	queries             float64
+	heartbeatP99        string
+	ranges              uint
+	highestOffset       uint32
 	highestOffsetNodeId int
 }
 
 func displayConsole(a *analysis) {
 	var output string
 
-	output += fmt.Sprintf(topLine + "\n", a.clusterId, a.timestamp)
+	output += fmt.Sprintf(topLine+"\n", a.clusterId, a.timestamp)
 	output += fmt.Sprint(summary) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryNodes, a.nodes) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryUsedCap, a.usedCap, a.availableCap) + "\n"
@@ -279,24 +269,3 @@ func displayConsole(a *analysis) {
 	fmt.Print(clearConsole)
 	fmt.Print(output)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

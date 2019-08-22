@@ -8,7 +8,6 @@ TODO : Maybe using the cockroachdb command could help : but how would we do this
 */
 
 import (
-
 	"encoding/json"
 	"github.com/bytemare/dbmon"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +18,7 @@ import (
 )
 
 const (
-	roachPeriod = 1 * time.Second
+	roachPeriod  = 1 * time.Second
 	roachTimeout = 10 * time.Second
 )
 

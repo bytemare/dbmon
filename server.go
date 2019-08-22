@@ -16,11 +16,11 @@ type DBMon struct {
 	// TODO this may not be very memory efficient, look for a better solution
 	clusters map[string]*Cluster
 	data     map[string][]*Probe // Cache to hold data to serve per cluster : a list of reports
-	mux      sync.Mutex             // Mutex to protect against concurrent read/write on cache
+	mux      sync.Mutex          // Mutex to protect against concurrent read/write on cache
 	source   <-chan *Probe       // Channel through which data is arriving
-	sync     chan struct{}          // Stop signal channel
-	port     string                 // Network port to listen on
-	grpc     *grpc.Server           // The gRPC Server Handle
+	sync     chan struct{}       // Stop signal channel
+	port     string              // Network port to listen on
+	grpc     *grpc.Server        // The gRPC Server Handle
 }
 
 // NewDBMon initialises and returns a new DBMon struct

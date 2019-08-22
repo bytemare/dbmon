@@ -13,8 +13,8 @@ const timeLayout = "2006-01-02 15:04:05:1234"
 type Collector struct {
 	clusters   map[string]*Cluster // List of currently registered clusters
 	agents     map[*Cluster]*agent // List of running agents
-	sink       chan *Probe   // Channel agents send their data to
-	serverChan chan<- *Probe // Channel to send data to
+	sink       chan *Probe         // Channel agents send their data to
+	serverChan chan<- *Probe       // Channel to send data to
 	newCluster chan Cluster        // Channel to receive new requests for cluster registration
 
 	// Synchronisation for closing
