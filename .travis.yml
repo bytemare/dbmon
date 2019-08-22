@@ -39,7 +39,7 @@ install:
 
 #script:
   #- go run RealTraffic/RealTraffic.go &> /dev/null & sudo ./sniffer -timeout=200
-  - sonar-scanner
-
-#after_success:
   #- sonar-scanner
+
+after_success:
+  - sonar-scanner
