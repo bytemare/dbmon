@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/bytemare/dbmon"
 	cockroachdb "github.com/bytemare/dbmon/connectors/CockroachDB"
-	"github.com/bytemare/dbmon/dbmon"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"os"
@@ -16,10 +16,11 @@ import (
 
 const addr = "localhost"
 const port = "4000"
-const clusterId = "roachy"
+const clusterID = "roachy"
 const refresh = 2 * time.Second
 const timeout = 10 * time.Second
 
+/*
 func printNode(node *cockroachdb.NodeStats) {
 	log.Infof("Node Info : %d", node.ID)
 	log.Infof("Ranges: %d", node.Ranges)
@@ -33,10 +34,11 @@ func printNode(node *cockroachdb.NodeStats) {
 	log.Infof("Heartbeat Latency : %d", node.Latency99)
 	log.Infof("ClockOffset : %d", node.ClockOffset)
 }
+*/
 
-func setupConnection() *Connection {
+func setupConnection() *connection {
 
-	connection := &Connection{
+	connection := &connection{
 		Conn:   nil,
 		Client: nil,
 		Ctx:    nil,
@@ -58,22 +60,24 @@ func setupConnection() *Connection {
 	return connection
 }
 
-type Connection struct {
+type connection struct {
 	Conn   *grpc.ClientConn
 	Client dbmon.HealCheckClient
 	Ctx    context.Context
 	Cancel context.CancelFunc
 }
 
-func (c *Connection) close() {
+func (c *connection) close() {
 	_ = c.Conn.Close()
 	c.Cancel()
 }
 
-func (c *Connection) Pull() (*dbmon.PullReply, error) {
+
+// Pull implements the grpc client interface
+func (c *connection) Pull() (*dbmon.PullReply, error) {
 
 	reply, err := c.Client.Pull(c.Ctx, &dbmon.PullRequest{
-		ClusterId:            clusterId,
+		ClusterId:            clusterID,
 		NbProbes:             1,
 		XXX_NoUnkeyedLiteral: struct{}{},
 		XXX_unrecognized:     nil,
@@ -104,7 +108,7 @@ func integerByteCountSI(b int64) string {
 
 func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats) *analysis {
 	a := &analysis{
-		clusterId:           clusterID,
+		clusterID:           clusterID,
 		timestamp:           timestamp,
 		nodes:               len(nodes),
 		usedCap:             "",
@@ -113,11 +117,11 @@ func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats)
 		heartbeatP99:        "",
 		ranges:              0,
 		highestOffset:       0,
-		highestOffsetNodeId: 0,
+		highestOffsetNodeID: 0,
 	}
 
-	var usedCap uint64 = 0
-	var availCap int64 = 0
+	var usedCap uint64
+	var availCap int64
 
 	for _, node := range nodes {
 		usedCap += node.CapacityUsage
@@ -128,7 +132,7 @@ func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats)
 		}
 		if node.ClockOffset > a.highestOffset {
 			a.highestOffset = node.ClockOffset
-			a.highestOffsetNodeId = node.ID
+			a.highestOffsetNodeID = node.ID
 		}
 	}
 
@@ -140,7 +144,7 @@ func analyse(clusterID string, timestamp string, nodes []*cockroachdb.NodeStats)
 	return a
 }
 
-func pullPrint(c *Connection) error {
+func pullPrint(c *connection) error {
 	// Contact the server
 	reply, err := c.Pull()
 	if err != nil {
@@ -235,14 +239,14 @@ const (
 	highestOffset  = "Highest Clock offset %d ns ( node %d )"
 
 	// ANSI Colours
-	red   = "\033[31;1;1m"
+	//red   = "\033[31;1;1m"
 	green = "\033[32m"
 	blue  = "\033[34m"
 	stop  = "\033[0m"
 )
 
 type analysis struct {
-	clusterId           string
+	clusterID           string
 	timestamp           string // time.Now().Format("2019-08-17 23-03-18:745")
 	nodes               int
 	usedCap             string
@@ -251,20 +255,20 @@ type analysis struct {
 	heartbeatP99        string
 	ranges              uint
 	highestOffset       uint32
-	highestOffsetNodeId int
+	highestOffsetNodeID int
 }
 
 func displayConsole(a *analysis) {
 	var output string
 
-	output += fmt.Sprintf(topLine+"\n", a.clusterId, a.timestamp)
+	output += fmt.Sprintf(topLine+"\n", a.clusterID, a.timestamp)
 	output += fmt.Sprint(summary) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryNodes, a.nodes) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryUsedCap, a.usedCap, a.availableCap) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryQueries, a.queries) + "\n"
 	output += "\t\t> " + fmt.Sprintf(summaryP99, a.heartbeatP99) + "\n"
 	output += "\t\t> " + fmt.Sprintf(database, a.ranges) + "\n"
-	output += "\t\t> " + fmt.Sprintf(highestOffset, a.highestOffset, a.highestOffsetNodeId) + "\n"
+	output += "\t\t> " + fmt.Sprintf(highestOffset, a.highestOffset, a.highestOffsetNodeID) + "\n"
 
 	fmt.Print(clearConsole)
 	fmt.Print(output)
