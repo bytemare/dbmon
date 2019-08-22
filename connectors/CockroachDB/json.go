@@ -55,35 +55,8 @@ Top structures specific to requests
 
 // Health
 // /health
+// /healthready
 type Health struct {
-	NodeID  int `json:"nodeId"`
-	Address struct {
-		NetworkField string `json:"networkField"`
-		AddressField string `json:"addressField"`
-	} `json:"address"`
-	BuildInfo struct {
-		GoVersion       string      `json:"goVersion"`
-		Tag             string      `json:"tag"`
-		Time            string      `json:"time"`
-		Revision        string      `json:"revision"`
-		CgoCompiler     string      `json:"cgoCompiler"`
-		CgoTargetTriple string      `json:"cgoTargetTriple"`
-		Platform        string      `json:"platform"`
-		Distribution    string      `json:"distribution"`
-		Type            string      `json:"type"`
-		Channel         string      `json:"channel"`
-		EnvChannel      string      `json:"envChannel"`
-		Dependencies    interface{} `json:"dependencies"`
-	} `json:"buildInfo"`
-	SystemInfo struct {
-		SystemInfo string `json:"systemInfo"`
-		KernelInfo string `json:"kernelInfo"`
-	} `json:"systemInfo"`
-}
-
-// HealthReady
-// /health?ready=1
-type HealthReady struct {
 	NodeID  int `json:"nodeId"`
 	Address struct {
 		NetworkField string `json:"networkField"`
