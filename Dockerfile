@@ -9,9 +9,7 @@ COPY .git ./
 COPY connectors/ ./connectors/
 COPY app/ ./app/
 RUN go get -d ./...
-#RUN GOOS=linux GOARCH=amd64 go build -gccgoflags="-w -s" -a -installsuffix cgo -o $GOPATH/bin/dbmon app/dbmon.go
-#RUN GOOS=linux GOARCH=amd64 go build -o $GOPATH/bin/dbmon ./app/dbmon.go
-RUN GOOS=linux GOARCH=amd64 go build -o /bin/dbmon ./app/dbmon.go
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /bin/dbmon ./app/dbmon.go
 
 # 2. Build image
 FROM scratch
