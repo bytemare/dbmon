@@ -42,4 +42,4 @@ install:
   #- sonar-scanner
 
 after_success:
-  - sonar-scanner
+  - sonar-scanner -X
