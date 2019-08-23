@@ -568,9 +568,9 @@ type AllNodes struct {
 						PMax float64 `json:"pMax"`
 					} `json:"bytesPerReplica"`
 					WritesPerReplica struct {
-						P10  int     `json:"p10"`
-						P25  int     `json:"p25"`
-						P50  int     `json:"p50"`
+						P10  float64 `json:"p10"`
+						P25  float64 `json:"p25"`
+						P50  float64 `json:"p50"`
 						P75  float64 `json:"p75"`
 						P90  float64 `json:"p90"`
 						PMax float64 `json:"pMax"`
