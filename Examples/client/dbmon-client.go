@@ -1,5 +1,12 @@
 package main
 
+/**
+TODO : apparently, the grpc client doesn't implement a call/request based timeout, but only a total connection limit.
+	So we would have to hold a counter, resetting it to 0 after each successful call, to trace if the timeout is due to
+	a call or the whole connection
+ */
+
+
 import (
 	"context"
 	"encoding/json"
@@ -17,8 +24,9 @@ import (
 const addr = "localhost"
 const port = "4000"
 const clusterID = "roachy"
+const nbProbes = 0
 const refresh = 2 * time.Second
-const timeout = 10 * time.Second
+const timeout = 20 * time.Second
 
 /*
 func printNode(node *cockroachdb.NodeStats) {
@@ -53,7 +61,9 @@ func setupConnection() *connection {
 
 	connection.Conn = conn
 	connection.Client = dbmon.NewHealCheckClient(connection.Conn)
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	clientDeadline := time.Now().Add(timeout)
+	//ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithDeadline(context.Background(), clientDeadline)
 	connection.Ctx = ctx
 	connection.Cancel = cancel
 
@@ -77,7 +87,7 @@ func (c *connection) Pull() (*dbmon.PullReply, error) {
 
 	reply, err := c.Client.Pull(c.Ctx, &dbmon.PullRequest{
 		ClusterId:            clusterID,
-		NbProbes:             1,
+		NbProbes:             nbProbes,
 		XXX_NoUnkeyedLiteral: struct{}{},
 		XXX_unrecognized:     nil,
 		XXX_sizecache:        0,
@@ -150,16 +160,12 @@ func pullPrint(c *connection) error {
 		return err
 	}
 
-	log.Infof("Client received a response !")
+	//log.Infof("Client received a response !")
 
 	probes := reply.Probes
 	var nodes []*cockroachdb.NodeStats
 
-	for i, p := range probes {
-		log.Infof("probe %d : status %s", i, p.Status)
-		log.Infof("time  %s", p.Timestamp)
-
-		//node := &cockroachdb.NodeStats{}
+	for _, p := range probes {
 		err = json.Unmarshal(p.Data, &nodes)
 		if err != nil {
 			log.Error("Error in json : ", err)
@@ -173,6 +179,8 @@ func pullPrint(c *connection) error {
 }
 
 func main() {
+
+	log.Warnf("This is a demo with default values, and the deadline is set to %s", timeout.String())
 
 	// Set up a connection
 	connection := setupConnection()
