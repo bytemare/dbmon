@@ -101,30 +101,29 @@ func (mon *DBMon) RegisterCluster(cluster *Cluster) error {
 
 // Returns the list of strings representing reports
 func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*Probe {
-
 	mon.mux.Lock()
 	cache := mon.data[clusterID]
-
 	if len(cache) == 0 {
 		mon.mux.Unlock()
 		return nil
 	}
 
-	if nbProbes <= 0 {
+	if nbProbes <= 0 { // If number of probes asked for is 0, we treat them all
 		nbProbes = len(cache)
 	}
-	probes := make([]*Probe, nbProbes)
+	probes := make([]*Probe, nbProbes) // slice holding the result
 	copy(probes[:nbProbes], cache[:nbProbes])
 
 	// Delete head elements : this method avoids memory leaks
 	copy(cache, cache[nbProbes:])
 	for i := nbProbes; i < len(cache); i++ {
-		cache[i] = nil
+		cache[i] = nil // zero out rest of array
 	}
-	cache = cache[:len(cache)-nbProbes]
+	mon.data[clusterID] = cache[:len(cache)-nbProbes]
+
+	log.Info("Extracted %d probes from cache.", nbProbes)
 
 	mon.mux.Unlock()
-
 	return probes
 }
 
