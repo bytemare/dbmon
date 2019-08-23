@@ -39,11 +39,11 @@ func NewCollector(serverChan chan<- *Probe) *Collector {
 func (c *Collector) newAgent(cluster *Cluster, wg *sync.WaitGroup) error {
 
 	// Check whether the cluster is not already registered
-	if _, inc := c.clusters[cluster.id]; inc == true {
+	if _, inc := c.clusters[cluster.id]; inc {
 		return errors.New("could not create new agent. An agent for this cluster already exists")
 	}
 	// The following tests should never succeed, but still
-	if _, ina := c.agents[cluster]; ina == true {
+	if _, ina := c.agents[cluster]; ina {
 		return errors.New("THIS SHOULD NOT HAPPEN. could not create new agent. An agent for this cluster already exists")
 	}
 
