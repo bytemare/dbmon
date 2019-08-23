@@ -24,16 +24,16 @@ const (
 )
 
 const (
-	reqAllNodes       = "/_status/nodes"
+	reqAllNodes = "/_status/nodes"
 	/*
-	reqHealth         = "/health"
-	reqHealthReady    = "/health?ready=1"
-	reqSingleNode     = "/_status/nodes/[node_id]"
-	reqSingleHotrange = "_status/hotranges?node_id=[node_id]"
-	reqAllHotRanges   = "/_status/hotranges"
-	reqClusterRaft    = "/_status/raft"
-	reqClusterRange   = "/_status/range/1"
-	 */
+		reqHealth         = "/health"
+		reqHealthReady    = "/health?ready=1"
+		reqSingleNode     = "/_status/nodes/[node_id]"
+		reqSingleHotrange = "_status/hotranges?node_id=[node_id]"
+		reqAllHotRanges   = "/_status/hotranges"
+		reqClusterRaft    = "/_status/raft"
+		reqClusterRange   = "/_status/range/1"
+	*/
 )
 
 // RoachConnector is the struct to interact with, holding connection info about the target cluster
