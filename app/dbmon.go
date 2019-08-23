@@ -7,12 +7,17 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
-const addr = "http://localhost"
-const serverPort = ":4000"
-const clusterPort = "8080"
-const clusterID = "roachy"
+const (
+	addr = "http://localhost"
+	serverPort = ":4000"
+	clusterPort = "8080"
+	clusterID = "roachy"
+	probePeriod  = 1 * time.Second
+	probeTimeout = 10 * time.Second
+)
 
 func main() {
 
@@ -21,7 +26,7 @@ func main() {
 	// Set up components
 	mon := dbmon.NewDBMon(serverPort, source)
 	collector := dbmon.NewCollector(source)
-	roachCon := cockroachdb.NewConnector(clusterID, addr, clusterPort)
+	roachCon := cockroachdb.NewConnector(clusterID, addr, clusterPort, probePeriod, probeTimeout)
 	cluster := dbmon.NewCluster(clusterID, roachCon)
 
 	// Register Cluster to server
