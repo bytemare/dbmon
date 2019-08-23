@@ -9,6 +9,7 @@ TODO : Maybe using the cockroachdb command could help : but how would we do this
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/bytemare/dbmon"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -44,16 +45,22 @@ type RoachConnector struct {
 }
 
 // NewConnector returns a new initialised connector for a CockRoachDB endpoint
-func NewConnector(id string, ip string, port string) *RoachConnector {
-	log.Warn("Warning : DEMO ! CockroachDB should not use vanilla http.Client for production use.")
+func NewConnector(id string, ip string, port string, period time.Duration, timeout time.Duration) *RoachConnector {
+
+	if period == 0 {
+		period = roachPeriod
+	}
+	if timeout == 0 {
+		timeout = roachTimeout
+	}
 	return &RoachConnector{
 		clusterID: id,
 		ip:        ip,
 		port:      port,
-		period:    roachPeriod,
-		timeout:   roachTimeout,
+		period:    period,
+		timeout:   timeout,
 		netClient: &http.Client{
-			Timeout: roachTimeout,
+			Timeout: timeout,
 		},
 	}
 }
@@ -69,67 +76,11 @@ func (rc RoachConnector) get(endpoint string) (*http.Response, error) {
 	return resp, nil
 }
 
-/**
-**
-** Implement Connector on RoachConnector
-**
- */
-
-// getNodes returns a structure containing the response to a call to /_status/nodes
-func (rc RoachConnector) getNodes() ([]*NodeStats, error) {
-	resp, err := rc.get(rc.ip + ":" + rc.port + reqAllNodes)
-	if err != nil {
-		if resp != nil {
-			return nil, err
-		}
-		return nil, err
-	}
-
-	defer func() {
-		err = resp.Body.Close()
-		if err != nil {
-			log.Error("Closing response body failed. But who cares ?")
-		}
-	}()
-
-	nodes := &AllNodes{}
-	/*raw, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error("Error in reading json : ", err)
-	} else {
-		//log.Infof("Read json successfully : %#v", raw)
-	}
-
-	*/
-	//err = json.Unmarshal(raw, &nodes)
-	err = json.NewDecoder(resp.Body).Decode(nodes)
-	if err != nil {
-		log.Error("getNodes : Error in parsing json : ", err)
-		return nil, err
-	}
-
+func extractNodeInfo(nodes *AllNodes) []*NodeStats {
 	nodeStats := make([]*NodeStats, 0, len(nodes.Nodes))
 
 	for _, n := range nodes.Nodes {
-		node := &NodeStats{
-			ID:                0,
-			Up:                false,
-			Init:              false,
-			Out:               false,
-			Dead:              false,
-			Ranges:            0,
-			CapacityUsage:     0,
-			CapacityReserved:  0,
-			CapacityAvailable: 0,
-			Capacity:          0,
-			TotalSystemMemory: 0,
-			MemoryUsage:       0,
-			MemoryReserved:    0,
-			MemoryAvailable:   0,
-			QueriesPerSecond:  0,
-			Latency99:         0,
-			ClockOffset:       0,
-		}
+		node := newNodeStats()
 		node.ID = n.Desc.NodeID
 		node.Ranges = uint(n.StoreStatuses[0].Desc.Capacity.RangeCount)
 
@@ -145,12 +96,40 @@ func (rc RoachConnector) getNodes() ([]*NodeStats, error) {
 		node.ClockOffset = uint32(n.Metrics.ClockOffsetMeannanos)
 
 		nodeStats = append(nodeStats, node)
-		//log.Infof("Node Info : %#v", node)
 	}
 
-	return nodeStats, nil
+	return nodeStats
 }
 
+// getNodes returns a structure containing the response to a call to /_status/nodes
+func (rc RoachConnector) getNodes() ([]*NodeStats, error) {
+	resp, err := rc.get(rc.ip + ":" + rc.port + reqAllNodes)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		err = resp.Body.Close()
+		if err != nil {
+			log.Error("Closing response body failed. But who cares ?")
+		}
+	}()
+
+	nodes := &AllNodes{}
+	err = json.NewDecoder(resp.Body).Decode(nodes)
+	if err != nil {
+		log.Error("getNodes : Error in parsing json : ", err)
+		return nil, err
+	}
+	if len(nodes.Nodes) <= 0 {
+		return nil, errors.New("received positive response for 0 nodes")
+	} else {
+		log.Infof("Extracting info from %d nodes.", len(nodes.Nodes))
+	}
+
+	return extractNodeInfo(nodes), nil
+}
+
+/*
 func (rc RoachConnector) getRanges() (int, error) {
 	resp, err := rc.get(rc.ip + ":" + rc.port + reqClusterRaft)
 	if err != nil {
@@ -181,6 +160,8 @@ func (rc RoachConnector) getRanges() (int, error) {
 
 	return ranges, nil
 }
+*/
+
 
 // getHealth sends a single request to the specified resource
 func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte, err error) {
@@ -200,12 +181,10 @@ func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte
 
 	err = json.Unmarshal(raw, &test1)
 	if err != nil {
-		//log.Error("Error in parsing json : ", err)
+		log.Error("Error in parsing json : ", err)
+		return "0", nil, err
 	}
 	//log.Infof("Parsed json successfully : %#v", test1)
-
-	//test2 := dyno.ConvertMapI2MapS(test1)
-	//log.Infof("Remapped json : %#v", test2)
 
 	//log.Info("Raw response ", raw)
 	//log.Info("String response ", string(raw))
@@ -213,22 +192,23 @@ func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte
 	return resp.Status, raw, nil
 }
 
+/**
+**
+** Implement Connector on RoachConnector
+**
+ */
+
 // Probe operates requests to the cluster
 func (rc RoachConnector) Probe() (probe *dbmon.Probe, err error) {
 
-	log.Info("Sending request to Cluster ", rc.clusterID)
-	/*status, res, err := rc.getHealth(rc.ip + ":" + rc.port + reqHealth)
-	if err != nil {
-		return nil, err
-	}
-
-	*/
+	log.Info("Probing cluster ", rc.clusterID)
 
 	// Get Number of nodes and their ID
 	nodeStats, err := rc.getNodes()
 	if err != nil {
 		return nil, err
 	}
+
 	payload, err := json.Marshal(nodeStats)
 	if err != nil {
 		return nil, err
@@ -244,6 +224,7 @@ func (rc RoachConnector) Probe() (probe *dbmon.Probe, err error) {
 		XXX_sizecache:        0,
 	}
 
+	log.Info("Probing finished, sending payload to collector.")
 	return probe, nil
 }
 

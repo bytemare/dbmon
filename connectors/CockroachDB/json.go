@@ -49,6 +49,29 @@ type NodeStats struct {
 	ClockOffset       uint32
 }
 
+func newNodeStats() *NodeStats {
+	return &NodeStats{
+		ID:                0,
+		Up:                false,
+		Init:              false,
+		Out:               false,
+		Dead:              false,
+		Ranges:            0,
+		Replicas:          0,
+		CapacityUsage:     0,
+		CapacityReserved:  0,
+		CapacityAvailable: 0,
+		Capacity:          0,
+		TotalSystemMemory: 0,
+		MemoryUsage:       0,
+		MemoryReserved:    0,
+		MemoryAvailable:   0,
+		QueriesPerSecond:  0,
+		Latency99:         0,
+		ClockOffset:       0,
+	}
+}
+
 /*
 Top structures specific to requests
 */
