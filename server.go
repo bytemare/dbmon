@@ -113,7 +113,7 @@ func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*Probe {
 	if nbProbes <= 0 {
 		nbProbes = len(cache)
 	}
-	probes := make([]*Probe, nbProbes, nbProbes)
+	probes := make([]*Probe, nbProbes)
 	copy(probes[:nbProbes], cache[:nbProbes])
 
 	// Delete head elements : this method avoids memory leaks
