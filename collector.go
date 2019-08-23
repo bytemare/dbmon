@@ -85,26 +85,19 @@ func (c *Collector) UnregisterCluster(cluster *Cluster) {
 }
 
 // Start starts the Collector
+// Todo : use a message type method,
+//  by using a single channel to control collector : add cluster, remove cluster, etc.
 func (c *Collector) Start() {
 collector:
 	for {
 		select {
-
-		// Todo : use a message type method,
-		//  by using a single channel to control collector : add cluster, remove cluster, etc.
-
 		case <-c.sync:
 			log.Info("Collector received the stop signal.")
 			c.stopAll()
-			close(c.sync)
-			close(c.sink)
 			break collector
 
 		case probe := <-c.sink:
-			log.Info("Collector got new probe !")
-			// Send to server
-			// TODO : if changing architecture, use here a connection to the server
-			c.serverChan <- probe
+			c.serverChan <- probe // TODO : if changing architecture, use here a connection to the server
 			log.Info("Collector : probe sent to server.")
 
 		case cluster := <-c.newCluster:
@@ -122,5 +115,7 @@ collector:
 // Stop stops the Collector
 func (c *Collector) Stop() {
 	c.sync <- struct{}{}
+	close(c.sync)
+	close(c.sink)
 	c.wait.Wait()
 }
