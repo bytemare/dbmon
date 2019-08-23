@@ -8,20 +8,18 @@ import (
 
 // agent is dedicated routine to handle connections to a cluster
 type agent struct {
-	cluster  *Cluster        // Target cluster
-	requests []request       // Map to a cluster a slice of possible requests
-	sink     chan<- *Probe   // Channel to send collected data to
-	sync     chan struct{}   // Channel to be told to stop
-	wg       *sync.WaitGroup // Synchronisation
+	cluster *Cluster        // Target cluster
+	sink    chan<- *Probe   // Channel to send collected data to
+	sync    chan struct{}   // Channel to be told to stop
+	wg      *sync.WaitGroup // Synchronisation
 }
 
 func newAgent(cluster *Cluster, sink chan<- *Probe, wg *sync.WaitGroup) *agent {
 	return &agent{
-		cluster:  cluster,
-		requests: []request{},
-		sink:     sink,
-		sync:     make(chan struct{}),
-		wg:       wg,
+		cluster: cluster,
+		sink:    sink,
+		sync:    make(chan struct{}),
+		wg:      wg,
 	}
 }
 
@@ -57,7 +55,6 @@ agent:
 				log.WithFields(log.Fields{
 					"cluster":   a.cluster.id,
 					"timestamp": time.Now().Format(timeLayout),
-					"request":   a.requests,
 					"error":     err,
 				}).Error("Error in collecting data from cluster.")
 			}

@@ -7,13 +7,6 @@ type Cluster struct {
 	connector Connector // Connector enabling communicating with the cluster
 }
 
-// request defines a possible request for a cluster's API
-type request struct {
-	id      string   // Request identification
-	target  *Cluster // Target cluster of the request
-	request string   // Request to send to the cluster's API
-}
-
 // NewCluster returns a new initialised Cluster struct
 func NewCluster(id string, c Connector) *Cluster {
 	return &Cluster{
