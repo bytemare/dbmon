@@ -122,10 +122,8 @@ func (rc RoachConnector) getNodes() ([]*NodeStats, error) {
 	}
 	if len(nodes.Nodes) <= 0 {
 		return nil, errors.New("received positive response for 0 nodes")
-	} else {
-		log.Infof("Extracting info from %d nodes.", len(nodes.Nodes))
 	}
-
+	log.Infof("Extracting info from %d nodes.", len(nodes.Nodes))
 	return extractNodeInfo(nodes), nil
 }
 
@@ -161,7 +159,6 @@ func (rc RoachConnector) getRanges() (int, error) {
 	return ranges, nil
 }
 */
-
 
 // getHealth sends a single request to the specified resource
 func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte, err error) {
