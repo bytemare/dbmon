@@ -12,7 +12,6 @@ import (
 	"errors"
 	"github.com/bytemare/dbmon"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -162,6 +161,7 @@ func (rc RoachConnector) getRanges() (int, error) {
 }
 */
 
+/*
 // getHealth sends a single request to the specified resource
 func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte, err error) {
 	resp, err := rc.get(fullAdd)
@@ -190,6 +190,8 @@ func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte
 	//return resp.Status, string(raw), nil
 	return resp.Status, raw, nil
 }
+*/
+
 
 /**
 **
