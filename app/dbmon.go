@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	addr = "http://localhost"
-	serverPort = ":4000"
-	clusterPort = "8080"
-	clusterID = "roachy"
+	addr         = "http://localhost"
+	serverPort   = ":4000"
+	clusterPort  = "8080"
+	clusterID    = "roachy"
 	probePeriod  = 1 * time.Second
 	probeTimeout = 10 * time.Second
 )
