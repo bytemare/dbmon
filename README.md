@@ -7,6 +7,7 @@ A cluster monitoring tool.
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f906e2104b24db88596a918c25e59e6)](https://www.codacy.com/app/bytemare/dbmon?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bytemare/dbmon&amp;utm_campaign=Badge_Grade)
 [![GolangCI](https://golangci.com/badges/github.com/bytemare/dbmon.svg)](https://golangci.com/r/github.com/bytemare/dbmon)
 [![GoDoc](https://godoc.org/github.com/bytemare/dbmon?status.svg)](https://godoc.org/github.com/bytemare/dbmon)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon?ref=badge_shield)
 
 ## Testing
 
@@ -166,3 +167,7 @@ v2 :
 - [ ] Clients can send commands, like 'health' to get a healthcheck, 'info' for general info, and more ad-hoc commands
     ( a command must then be registered in the connector )
 - [ ] Authentication collector <-> cluster (no idea, yet)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon?ref=badge_large)
