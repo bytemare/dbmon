@@ -121,7 +121,7 @@ func (mon *DBMon) extractProbes(clusterID string, nbProbes int) []*Probe {
 	}
 	mon.data[clusterID] = cache[:len(cache)-nbProbes]
 
-	log.Info("Extracted %d probes from cache.", nbProbes)
+	log.Infof("Extracted %d probes from cache.", nbProbes)
 
 	mon.mux.Unlock()
 	return probes
