@@ -12,9 +12,13 @@ A cluster monitoring tool.
 The platform is _functional_. To see it live, you must first run a cluster, see instructions here : https://www.cockroachlabs.com/docs/stable/start-a-local-cluster-in-docker.html
 _NB: If you changed the port number used id the instructions, please adapt it in the server test program : Test/server/dbmon.go_
 
-Run the server :
+Run the server in a docker container or compile and run it yourself :
 
-    $ go run Tests/server/dbmon.go
+    $ docker run bytemare/dbmon:dbmon.server.v0
+    
+    or
+    
+    $ go run Examples/server/dbmon.go
 
 Then, in a different terminal
 
