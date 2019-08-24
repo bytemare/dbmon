@@ -1,7 +1,7 @@
 # 1. Build exec
 FROM golang:alpine AS builder
 RUN apk update && apk add --no-cache git
-RUN adduser --no-log-init -D -g '' dbmon
+RUN adduser -D -g '' dbmon
 
 WORKDIR $GOPATH/src/github.com/bytemare/dbmon/
 COPY *.go ./
