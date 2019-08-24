@@ -7,6 +7,7 @@ A cluster monitoring tool.
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f906e2104b24db88596a918c25e59e6)](https://www.codacy.com/app/bytemare/dbmon?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bytemare/dbmon&amp;utm_campaign=Badge_Grade)
 [![GolangCI](https://golangci.com/badges/github.com/bytemare/dbmon.svg)](https://golangci.com/r/github.com/bytemare/dbmon)
 [![GoDoc](https://godoc.org/github.com/bytemare/dbmon?status.svg)](https://godoc.org/github.com/bytemare/dbmon)
+[![](https://images.microbadger.com/badges/image/bytemare/dbmon:dbmon.server.v0.svg)](https://microbadger.com/images/bytemare/dbmon:dbmon.server.v0)
 
 ## Testing
 
