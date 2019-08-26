@@ -235,8 +235,9 @@ func main() {
 
 const (
 	clearConsole = "\x1Bc"
+	lineStart	= "\t\t> "
 	topLine      = green + "[dbmon]" + blue + " \tCluster :  %s" + stop + "\t\tLast updated : %s"
-	//noData			= "\t\t\t--- No available data ---"
+	//noData			= tabSpace + "\t--- No available data ---"
 	summary        = "Health check summary :"
 	summaryNodes   = "Nodes : %d"
 	summaryUsedCap = "Used Capacity : %s / %s"
@@ -270,12 +271,12 @@ func displayConsole(a *analysis) {
 
 	output += fmt.Sprintf(topLine+"\n", a.clusterID, a.timestamp)
 	output += fmt.Sprint(summary) + "\n"
-	output += "\t\t> " + fmt.Sprintf(summaryNodes, a.nodes) + "\n"
-	output += "\t\t> " + fmt.Sprintf(summaryUsedCap, a.usedCap, a.availableCap) + "\n"
-	output += "\t\t> " + fmt.Sprintf(summaryQueries, a.queries) + "\n"
-	output += "\t\t> " + fmt.Sprintf(summaryP99, a.heartbeatP99) + "\n"
-	output += "\t\t> " + fmt.Sprintf(database, a.ranges) + "\n"
-	output += "\t\t> " + fmt.Sprintf(highestOffset, a.highestOffset, a.highestOffsetNodeID) + "\n"
+	output += lineStart + fmt.Sprintf(summaryNodes, a.nodes) + "\n"
+	output += lineStart + fmt.Sprintf(summaryUsedCap, a.usedCap, a.availableCap) + "\n"
+	output += lineStart + fmt.Sprintf(summaryQueries, a.queries) + "\n"
+	output += lineStart + fmt.Sprintf(summaryP99, a.heartbeatP99) + "\n"
+	output += lineStart + fmt.Sprintf(database, a.ranges) + "\n"
+	output += lineStart + fmt.Sprintf(highestOffset, a.highestOffset, a.highestOffsetNodeID) + "\n"
 
 	fmt.Print(clearConsole)
 	fmt.Print(output)
