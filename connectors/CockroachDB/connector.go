@@ -192,7 +192,6 @@ func (rc RoachConnector) getHealth(fullAdd string) (status string, result []byte
 }
 */
 
-
 /**
 **
 ** Implement Connector on RoachConnector

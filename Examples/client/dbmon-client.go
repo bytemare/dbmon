@@ -4,8 +4,7 @@ package main
 TODO : apparently, the grpc client doesn't implement a call/request based timeout, but only a total connection limit.
 	So we would have to hold a counter, resetting it to 0 after each successful call, to trace if the timeout is due to
 	a call or the whole connection
- */
-
+*/
 
 import (
 	"context"
@@ -235,7 +234,7 @@ func main() {
 
 const (
 	clearConsole = "\x1Bc"
-	lineStart	= "\t\t> "
+	lineStart    = "\t\t> "
 	topLine      = green + "[dbmon]" + blue + " \tCluster :  %s" + stop + "\t\tLast updated : %s"
 	//noData			= tabSpace + "\t--- No available data ---"
 	summary        = "Health check summary :"
