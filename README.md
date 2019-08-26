@@ -6,6 +6,7 @@ A cluster monitoring tool.
 [![codebeat badge](https://codebeat.co/badges/7e86ba65-e7b9-4982-9996-6b42c0eb763e)](https://codebeat.co/projects/github-com-bytemare-dbmon-master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f906e2104b24db88596a918c25e59e6)](https://www.codacy.com/app/bytemare/dbmon?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bytemare/dbmon&amp;utm_campaign=Badge_Grade)
 [![GolangCI](https://golangci.com/badges/github.com/bytemare/dbmon.svg)](https://golangci.com/r/github.com/bytemare/dbmon)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=bytemare_dbmon&metric=security_rating)](https://sonarcloud.io/dashboard?id=bytemare_dbmon)
 [![](https://images.microbadger.com/badges/image/bytemare/dbmon:dbmon.server.v0.svg)](https://microbadger.com/images/bytemare/dbmon:dbmon.server.v0)
 [![GoDoc](https://godoc.org/github.com/bytemare/dbmon?status.svg)](https://godoc.org/github.com/bytemare/dbmon)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbytemare%2Fdbmon)
