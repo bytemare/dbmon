@@ -14,7 +14,7 @@ A cluster monitoring tool.
 ## Testing
 
 The platform is _functional_. To see it live, you must first run a cluster, see instructions here : https://www.cockroachlabs.com/docs/stable/start-a-local-cluster-in-docker.html
-_NB: If you changed the port number used id the instructions, please adapt it in the server test program : Test/server/dbmon.go_
+_NB: If you changed the port number used in the instructions, please adapt it in the server test program : app/dbmon.go_
 
 Run the server in a docker container or compile and run it yourself :
 
@@ -130,7 +130,7 @@ v0 :
 - [x] The collector sends every result to the server as a report : A report is the response for a call to the cluster
 - [x] Server holds a cache : a key:value map, that associates an identified cluster to a list of reports.
 - [x] Client operates unary RPC from to server and gets all the reports in a single response
-- [ ] Purge data to only keep desired ones ( in the connector ?)
+- [ ] Purge data to only keep desired ones ( in the connector ?) : CockroachDB
     - [x] Cluster's status
     - [ ] Useful information about health
         - [ ] Ranges / Replicas / Nodes
@@ -150,22 +150,32 @@ v0 :
         - [ ] Number of pending tasks
         - [ ] Oldest task (time the earliest initiated, still pending, task has been waiting for)
 - [x] Server/Collector are bundled and Dockerised
-- [ ] Unit tests
-- [ ] Add parameters as command line arguments
+- [x] Testing
+- [ ] Coverage
 - [ ] Better logging, and to a file (but not for docker)
 - [ ] Better documentation
 
-v1 :
-- [ ] Pub/Sub pattern in gRPC between client and server : the server streams continuously reports to the client
+v0.1 : Separate units and configuration independent boot
+- [ ] Add a cluster through client (client tells monitor which cluster/s to connect to)
+- [ ] Add a lifetime to cache : time based or buffer size (last n probes)
+- [ ] Make server/collector as agnostic as possible on launch (only do specific things as demanded by client)
+- [ ] Add parameters as command line arguments (ports, etc.)
+
+v0.2 : Further separation and make use of streams
 - [ ] Separate server and collector, and implement a gRPC interface between them
 - [ ] Continuously stream reports from the collector to the server
-- [ ] Add more connectors 
-- [ ] Configure with yaml files
-- [ ] authentication server <-> collector (set up instance pki ?)
-- [ ] authentication client <-> server (mTLS ? WebAuthN + macaroons ?)
+- [ ] Pub/Sub pattern in gRPC between client and server : the server streams continuously reports to the client
 
-v2 :
+v0.3 :
 - [ ] Operate a better cache system, maybe using a database
+- [ ] Add more connectors 
+- [ ] Configure client with yaml file ?
+
+v0.4 : Authentication
+- [ ] authentication client <-> server (mTLS ? WebAuthN + macaroons ?)
+- [ ] authentication server <-> collector (set up instance pki ?)
+- [ ] Authentication collector <-> cluster (no idea, yet)
+
+v0.5 :
 - [ ] Clients can send commands, like 'health' to get a healthcheck, 'info' for general info, and more ad-hoc commands
     ( a command must then be registered in the connector )
-- [ ] Authentication collector <-> cluster (no idea, yet)
