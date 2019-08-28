@@ -5,6 +5,7 @@ RUN adduser -D -g '' dbmon
 
 WORKDIR $GOPATH/src/github.com/bytemare/dbmon/
 COPY *.go ./
+COPY go.* ./
 COPY .git ./
 COPY connectors/ ./connectors/
 COPY app/ ./app/
