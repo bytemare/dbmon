@@ -23,7 +23,7 @@ Run the server in a docker container or compile and run it yourself :
     
     or
     
-    $ go run Examples/server/dbmon.go
+    $ go run app/dbmon.go
 
 Then, in a different terminal
 
@@ -32,12 +32,9 @@ Then, in a different terminal
 These are only showcase programs, and don't yet implement all desired functionalities (See Roadmap below).
 
 To stop the server gracefully, interrupt with ctrl+c.  
-
-> Fancy sparkling pew-pew badges
 ___
 > What it does
 ___
-
 > Explanation draft
 >
 > - Simplicity in use
@@ -160,6 +157,24 @@ v0 :
 - [ ] Coverage
 - [ ] Better logging, and to a file (but not for docker)
 - [ ] Better documentation
+
+v0.0.1 : Docker Hardening
+
+- [ ] Use Docker Content Trust
+- [x] Use lower privileged user
+- [x] Expose userland-only ports
+- [ ] Enforce user namespaces
+- [ ] Enforce cgroups
+  - [ ] CPU
+  - [ ] RAM
+  - [ ] Storage
+- [ ] Security options
+  - [ ] No new privileges
+  - [ ] Seccomp profile
+  - [ ] Apparmor profile
+- [ ] Read-only
+- [ ] Run CIS Benchmark
+- [ ] Vulnerability Scans
 
 v0.1 : Separate units and configuration independent boot
 
