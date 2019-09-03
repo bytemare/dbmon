@@ -172,7 +172,8 @@ v0.0.1 : Docker Hardening
   - [x] No new privileges
   - [x] Seccomp profile
   - [ ] Apparmor profile
-- [ ] Read-only
+- [x] Read-only
+- [ ] Drop unnecessary capabilities
 - [ ] Run CIS Benchmark
 - [ ] Vulnerability Scans
 
