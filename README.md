@@ -169,7 +169,7 @@ v0.0.1 : Docker Hardening
   - [ ] RAM
   - [ ] Storage
 - [ ] Security options
-  - [ ] No new privileges
+  - [x] No new privileges
   - [x] Seccomp profile
   - [ ] Apparmor profile
 - [ ] Read-only
