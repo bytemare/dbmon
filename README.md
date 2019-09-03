@@ -170,7 +170,7 @@ v0.0.1 : Docker Hardening
   - [ ] Storage
 - [ ] Security options
   - [ ] No new privileges
-  - [ ] Seccomp profile
+  - [x] Seccomp profile
   - [ ] Apparmor profile
 - [ ] Read-only
 - [ ] Run CIS Benchmark
